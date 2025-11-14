@@ -3,25 +3,13 @@ import SplashScreen from "../components/SplashScreen";
 import Navbar from "../components/layouts/Navbar.jsx";
 
 export default function MainLayout({ children }) {
-  const [animationDone, setAnimationDone] = useState(false);
-
   return (
     <>
-      {/* Splash Screen */}
-      {!animationDone && (
-        <SplashScreen onFinish={() => setAnimationDone(true)} />
-      )}
+      <Navbar />
 
-      {/* Main Application Layout */}
-      {animationDone && (
-        <>
-          <Navbar />
-
-          <div style={{ paddingTop: "140px" }}>
-            {children}
-          </div>
-        </>
-      )}
+      <div style={{ paddingTop: "140px" }}>
+        {children}
+      </div>
     </>
   );
 }
