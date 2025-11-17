@@ -147,10 +147,10 @@ export default function Login() {
             </label>
           </div>
 
-          {/* PASSWORD FIELD — NO EYE ICON */}
+          {/* PASSWORD FIELD */}
           <div style={{ position: "relative", width: "350px" }}>
             <input
-              type="password" // Always masked
+              type="password"
               value={password}
               onChange={(e) => {
                 setPassword(e.target.value);
@@ -234,38 +234,67 @@ export default function Login() {
             Login
           </button>
 
-          {/* OAUTH BUTTONS */}
-          <div style={{ marginTop: "20px", display: "flex", gap: "20px" }}>
-            <button
-              style={{
-                padding: "12px 20px",
-                borderRadius: "50px",
-                border: "2px solid #0d9488",
-                background: "white",
-                color: "#0d9488",
-                fontWeight: "600",
-                cursor: "pointer",
-              }}
-            >
-              Continue with Google
-            </button>
+          {/* ========================= */}
+          {/*       OAUTH BUTTONS       */}
+          {/* ========================= */}
 
-            <button
-              style={{
-                padding: "12px 20px",
-                borderRadius: "50px",
-                border: "2px solid #0d9488",
-                background: "white",
-                color: "#0d9488",
-                fontWeight: "600",
-                cursor: "pointer",
-              }}
-            >
-              Continue with GitHub
-            </button>
+          <div
+            style={{
+              marginTop: "40px",
+              display: "flex",
+              flexDirection: "row",
+              gap: "20px",
+              justifyContent: "center",
+              flexWrap: "wrap",
+            }}
+          >
+            <OAuthButton provider="Google" logo="/google.png" />
+            <OAuthButton provider="GitHub" logo="/github.png" />
+            <OAuthButton provider="Outlook" logo="/outlook.png" />
+            <OAuthButton provider="Apple" logo="/apple.png" />
           </div>
         </motion.div>
       </motion.div>
     </MainLayout>
+  );
+}
+
+/* ========================= */
+/*   REUSABLE OAUTH BUTTON   */
+/* ========================= */
+
+function OAuthButton({ logo, provider }) {
+  return (
+    <button
+      style={{
+        width: "260px",
+        padding: "14px 20px",
+        backgroundColor: "#0d9488",
+        color: "white",
+        border: "2px solid transparent",
+        borderRadius: "50px",
+        fontSize: "1.1rem",
+        fontWeight: "600",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",   // LOGO RIGHT
+        cursor: "pointer",
+        transition: "0.25s ease",
+        fontFamily: "Helvetica",
+      }}
+      onMouseEnter={(e) => {
+        e.target.style.backgroundColor = "white";
+        e.target.style.color = "#0d9488";
+        e.target.style.border = "2px solid #0d9488";
+      }}
+      onMouseLeave={(e) => {
+        e.target.style.backgroundColor = "#0d9488";
+        e.target.style.color = "white";
+        e.target.style.border = "2px solid transparent";
+      }}
+    >
+      <span>Continue with {provider}</span>
+      <img src={logo} alt="" style={{ width: "22px" }} />
+    </button>
   );
 }
