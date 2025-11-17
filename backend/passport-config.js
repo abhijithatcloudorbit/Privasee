@@ -1,83 +1,85 @@
-// passport-config.js
-const passport = require("passport");
-const GoogleStrategy = require("passport-google-oauth20").Strategy;
-const GitHubStrategy = require("passport-github2").Strategy;
-const MicrosoftStrategy = require("passport-microsoft").Strategy;
-require("dotenv").config();
+import passport from "passport";
+import GoogleStrategy from "passport-google-oauth20";
+import GitHubStrategy from "passport-github2";
+import MicrosoftStrategy from "passport-microsoft";
+import fs from "fs";
+import path from "path";
+import dotenv from "dotenv";
 
-module.exports = function configurePassport() {
-  // Serialize / deserialize (we'll not use sessions heavily, but required)
-  passport.serializeUser((user, done) => done(null, user));
-  passport.deserializeUser((obj, done) => done(null, obj));
+dotenv.config();
 
-  // Google Strategy
+// ===== Helper: After login, we store user info =====
+function authCallback(accessToken, refreshToken, profile, done) {
+  const user = {
+    id: profile.id,
+    name: profile.displayName,
+    provider: profile.provider,
+    email: profile.emails ? profile.emails[0].value : null,
+  };
+  return done(null, user);
+}
+
+export default function configurePassport() {
+  // ----- GOOGLE -----
   passport.use(
     new GoogleStrategy(
       {
         clientID: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        callbackURL: `${process.env.BASE_URL}${process.env.GOOGLE_CALLBACK}`,
+        callbackURL: process.env.GOOGLE_CALLBACK,
       },
-      function (accessToken, refreshToken, profile, done) {
-        // Normalise user object
-        const user = {
-          id: profile.id,
-          provider: "google",
-          displayName: profile.displayName,
-          emails: profile.emails,
-          photos: profile.photos,
-        };
-        return done(null, user);
-      }
+      authCallback
     )
   );
 
-  // GitHub Strategy
+  // ----- GITHUB -----
   passport.use(
     new GitHubStrategy(
       {
         clientID: process.env.GITHUB_CLIENT_ID,
         clientSecret: process.env.GITHUB_CLIENT_SECRET,
-        callbackURL: `${process.env.BASE_URL}${process.env.GITHUB_CALLBACK}`,
-        scope: ["user:email"],
+        callbackURL: process.env.GITHUB_CALLBACK,
       },
-      function (accessToken, refreshToken, profile, done) {
-        const user = {
-          id: profile.id,
-          provider: "github",
-          displayName: profile.displayName || profile.username,
-          emails: profile.emails,
-          photos: profile.photos,
-        };
-        return done(null, user);
-      }
+      authCallback
     )
   );
 
-  // Microsoft Strategy (Outlook)
+  // ----- MICROSOFT / OUTLOOK -----
   passport.use(
     new MicrosoftStrategy(
       {
         clientID: process.env.MICROSOFT_CLIENT_ID,
         clientSecret: process.env.MICROSOFT_CLIENT_SECRET,
-        callbackURL: `${process.env.BASE_URL}${process.env.MICROSOFT_CALLBACK}`,
-        scope: ["user.read"],
+        callbackURL: process.env.MICROSOFT_CALLBACK,
+        tenant: process.env.MICROSOFT_TENANT,
       },
-      function (accessToken, refreshToken, profile, done) {
-        const user = {
-          id: profile.id,
-          provider: "microsoft",
-          displayName: profile.displayName,
-          emails: profile.emails,
-          photos: profile.photos,
-        };
-        return done(null, user);
-      }
+      authCallback
     )
   );
 
-  // === Apple setup note ===
-  // Apple Sign In requires a signed JWT client secret and a private key (.p8).
-  // You can integrate with passport-apple or apple-signin-auth.
-  // I did not wire a strategy here by default — see README below for Apple example.
-};
+  // ----- APPLE (optional) -----
+  try {
+    const privateKey = fs.readFileSync(
+      path.resolve(process.env.APPLE_PRIVATE_KEY_PATH)
+    );
+
+    passport.use(
+      new AppleStrategy(
+        {
+          clientID: process.env.APPLE_CLIENT_ID,
+          teamID: process.env.APPLE_TEAM_ID,
+          keyID: process.env.APPLE_KEY_ID,
+          privateKey,
+          callbackURL: process.env.APPLE_CALLBACK,
+          scope: ["name", "email"],
+        },
+        authCallback
+      )
+    );
+  } catch (e) {
+    console.log("Apple key not found, skipping Apple login.");
+  }
+
+  passport.serializeUser((user, done) => done(null, user));
+  passport.deserializeUser((obj, done) => done(null, obj));
+}

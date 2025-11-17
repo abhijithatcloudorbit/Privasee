@@ -1,73 +1,60 @@
-// routes/auth.js
-const express = require("express");
-const passport = require("passport");
-const jwt = require("jsonwebtoken");
+import express from "express";
+import jwt from "jsonwebtoken";
+import passport from "passport";
+
 const router = express.Router();
-require("dotenv").config();
 
-// helper: create JWT and redirect to frontend
-function finishAuth(req, res, user) {
-  const payload = {
-    sub: user.id,
-    name: user.displayName,
-    provider: user.provider,
-    emails: user.emails || [],
-  };
+function sendToken(req, res) {
+  const user = req.user;
 
-  const token = jwt.sign(payload, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN || "1h",
-  });
+  const token = jwt.sign(
+    { id: user.id, email: user.email, provider: user.provider },
+    process.env.JWT_SECRET,
+    { expiresIn: process.env.JWT_EXPIRES_IN }
+  );
 
-  // redirect to frontend with token (use secure method in production)
-  const redirectUrl = `${process.env.FRONTEND_URL}/auth/callback?token=${token}`;
-  return res.redirect(redirectUrl);
+  return res.redirect(
+    `${process.env.FRONTEND_URL}/?token=${token}&user=${encodeURIComponent(
+      user.name
+    )}`
+  );
 }
 
-/**
- * Google
- */
+/* ===== GOOGLE ===== */
 router.get("/google", passport.authenticate("google", { scope: ["profile", "email"] }));
-
 router.get(
   "/google/callback",
-  passport.authenticate("google", { session: false, failureRedirect: `${process.env.FRONTEND_URL}/login?error=google` }),
-  (req, res) => {
-    finishAuth(req, res, req.user);
-  }
+  passport.authenticate("google", { failureRedirect: "/auth/fail" }),
+  sendToken
 );
 
-/**
- * GitHub
- */
+/* ===== GITHUB ===== */
 router.get("/github", passport.authenticate("github", { scope: ["user:email"] }));
-
 router.get(
   "/github/callback",
-  passport.authenticate("github", { session: false, failureRedirect: `${process.env.FRONTEND_URL}/login?error=github` }),
-  (req, res) => {
-    finishAuth(req, res, req.user);
-  }
+  passport.authenticate("github", { failureRedirect: "/auth/fail" }),
+  sendToken
 );
 
-/**
- * Microsoft / Outlook
- */
-router.get("/microsoft", passport.authenticate("microsoft"));
-
+/* ===== MICROSOFT ===== */
+router.get(
+  "/microsoft",
+  passport.authenticate("microsoft", { scope: ["user.read"] })
+);
 router.get(
   "/microsoft/callback",
-  passport.authenticate("microsoft", { session: false, failureRedirect: `${process.env.FRONTEND_URL}/login?error=microsoft` }),
-  (req, res) => {
-    finishAuth(req, res, req.user);
-  }
+  passport.authenticate("microsoft", { failureRedirect: "/auth/fail" }),
+  sendToken
 );
 
-/**
- * Optional: Logout
- */
-router.get("/logout", (req, res) => {
-  req.logout?.();
-  res.redirect(process.env.FRONTEND_URL || "/");
-});
+/* ===== APPLE ===== */
+router.get("/apple", passport.authenticate("apple"));
+router.post(
+  "/apple/callback",
+  passport.authenticate("apple", { failureRedirect: "/auth/fail" }),
+  sendToken
+);
 
-module.exports = router;
+router.get("/fail", (req, res) => res.send("OAuth Login Failed"));
+
+export default router;

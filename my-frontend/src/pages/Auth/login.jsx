@@ -25,12 +25,8 @@ export default function Login() {
   const handleLogin = () => {
     let newErrors = {};
 
-    if (!validateEmail(email)) {
-      newErrors.email = "Invalid email format";
-    }
-    if (!validatePassword(password)) {
-      newErrors.password = "Password must be at least 6 characters";
-    }
+    if (!validateEmail(email)) newErrors.email = true;
+    if (!validatePassword(password)) newErrors.password = true;
 
     setErrors(newErrors);
 
@@ -83,7 +79,7 @@ export default function Login() {
         style={{
           paddingTop: "40px",
           textAlign: "center",
-          fontFamily: "Helvetica, Arial, Sans-Serif",
+          fontFamily: "Helvetica, Arial, sans-serif",
           color: "#0d9488",
         }}
       >
@@ -97,6 +93,7 @@ export default function Login() {
           Welcome back!
         </h1>
 
+        {/* FORM FIELDS */}
         <motion.div
           animate={shake ? { x: [-12, 12, -12, 12, 0] } : {}}
           transition={{ duration: 0.3 }}
@@ -108,84 +105,31 @@ export default function Login() {
           }}
         >
           {/* EMAIL FIELD */}
-          <div style={{ position: "relative", width: "350px" }}>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => {
-                setEmail(e.target.value);
-                setErrors((prev) => ({
-                  ...prev,
-                  email: !validateEmail(e.target.value),
-                }));
-              }}
-              style={{
-                width: "100%",
-                padding: "18px 16px 10px 16px",
-                borderRadius: "10px",
-                border: errors.email ? "2px solid red" : "2px solid #0d9488",
-                outline: "none",
-                fontSize: "1.1rem",
-                color: errors.email ? "red" : "#0d9488",
-                fontFamily: "Helvetica",
-                transition: "0.2s ease",
-              }}
-            />
-
-            {/* Floating Label */}
-            <label
-              style={{
-                position: "absolute",
-                left: "16px",
-                top: email ? "4px" : "16px",
-                fontSize: email ? "0.75rem" : "1.1rem",
-                color: errors.email ? "red" : "#0d9488",
-                transition: "all 0.2s ease",
-              }}
-            >
-              Email
-            </label>
-          </div>
+          <FloatingInput
+            label="Email"
+            type="email"
+            value={email}
+            onChange={(val) => {
+              setEmail(val);
+              setErrors((prev) => ({ ...prev, email: !validateEmail(val) }));
+            }}
+            error={errors.email}
+          />
 
           {/* PASSWORD FIELD */}
-          <div style={{ position: "relative", width: "350px" }}>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
-                setErrors((prev) => ({
-                  ...prev,
-                  password: !validatePassword(e.target.value),
-                }));
-              }}
-              style={{
-                width: "100%",
-                padding: "18px 16px 10px 16px",
-                borderRadius: "10px",
-                border: errors.password ? "2px solid red" : "2px solid #0d9488",
-                outline: "none",
-                fontSize: "1.1rem",
-                color: errors.password ? "red" : "#0d9488",
-                fontFamily: "Helvetica",
-                transition: "0.2s ease",
-              }}
-            />
-
-            {/* Floating Label */}
-            <label
-              style={{
-                position: "absolute",
-                left: "16px",
-                top: password ? "4px" : "16px",
-                fontSize: password ? "0.75rem" : "1.1rem",
-                color: errors.password ? "red" : "#0d9488",
-                transition: "all 0.2s ease",
-              }}
-            >
-              Password
-            </label>
-          </div>
+          <FloatingInput
+            label="Password"
+            type="password"
+            value={password}
+            onChange={(val) => {
+              setPassword(val);
+              setErrors((prev) => ({
+                ...prev,
+                password: !validatePassword(val),
+              }));
+            }}
+            error={errors.password}
+          />
 
           {/* FORGOT PASSWORD */}
           <p
@@ -197,47 +141,15 @@ export default function Login() {
               marginBottom: "10px",
               fontWeight: "600",
             }}
-            onClick={() =>
-              alert("Password recovery flow will be implemented soon!")
-            }
+            onClick={() => alert("Password recovery flow coming soon!")}
           >
             Forgot password?
           </p>
 
           {/* LOGIN BUTTON */}
-          <button
-            onClick={handleLogin}
-            style={{
-              width: "200px",
-              padding: "16px 0",
-              backgroundColor: "#0d9488",
-              color: "white",
-              border: "2px solid transparent",
-              borderRadius: "50px",
-              fontSize: "1.3rem",
-              fontWeight: "600",
-              fontFamily: "Helvetica, Arial, sans-serif",
-              cursor: "pointer",
-              transition: "0.25s ease",
-            }}
-            onMouseEnter={(e) => {
-              e.target.style.backgroundColor = "white";
-              e.target.style.color = "#0d9488";
-              e.target.style.border = "2px solid #0d9488";
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.backgroundColor = "#0d9488";
-              e.target.style.color = "white";
-              e.target.style.border = "2px solid transparent";
-            }}
-          >
-            Login
-          </button>
+          <ActionButton text="Login" onClick={handleLogin} />
 
-          {/* ========================= */}
-          {/*       OAUTH BUTTONS       */}
-          {/* ========================= */}
-
+          {/* OAUTH BUTTONS */}
           <div
             style={{
               marginTop: "40px",
@@ -248,10 +160,10 @@ export default function Login() {
               flexWrap: "wrap",
             }}
           >
-            <OAuthButton provider="Google" logo="/google.png" />
-            <OAuthButton provider="GitHub" logo="/github.png" />
-            <OAuthButton provider="Outlook" logo="/outlook.png" />
-            <OAuthButton provider="Apple" logo="/apple.png" />
+            <OAuthButton provider="google" label="Google" logo="/google.png" />
+            <OAuthButton provider="github" label="GitHub" logo="/github.png" />
+            <OAuthButton provider="outlook" label="Outlook" logo="/outlook.png" />
+            <OAuthButton provider="apple" label="Apple" logo="/apple.png" />
           </div>
         </motion.div>
       </motion.div>
@@ -260,12 +172,92 @@ export default function Login() {
 }
 
 /* ========================= */
-/*   REUSABLE OAUTH BUTTON   */
+/*    FLOATING INPUT FIELD   */
 /* ========================= */
 
-function OAuthButton({ logo, provider }) {
+function FloatingInput({ label, value, onChange, error, type }) {
+  return (
+    <div style={{ position: "relative", width: "350px" }}>
+      <input
+        type={type}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        style={{
+          width: "100%",
+          padding: "18px 16px 10px 16px",
+          borderRadius: "10px",
+          border: error ? "2px solid red" : "2px solid #0d9488",
+          outline: "none",
+          fontSize: "1.1rem",
+          color: error ? "red" : "#0d9488",
+          fontFamily: "Helvetica",
+          transition: "0.2s ease",
+        }}
+      />
+
+      <label
+        style={{
+          position: "absolute",
+          left: "16px",
+          top: value ? "4px" : "16px",
+          fontSize: value ? "0.75rem" : "1.1rem",
+          color: error ? "red" : "#0d9488",
+          transition: "all 0.2s ease",
+        }}
+      >
+        {label}
+      </label>
+    </div>
+  );
+}
+
+/* ========================= */
+/*   MAIN LOGIN BUTTON       */
+/* ========================= */
+
+function ActionButton({ text, onClick }) {
   return (
     <button
+      onClick={onClick}
+      style={{
+        width: "200px",
+        padding: "16px 0",
+        backgroundColor: "#0d9488",
+        color: "white",
+        border: "2px solid transparent",
+        borderRadius: "50px",
+        fontSize: "1.3rem",
+        fontWeight: "600",
+        fontFamily: "Helvetica",
+        cursor: "pointer",
+        transition: "0.25s ease",
+      }}
+      onMouseEnter={(e) => {
+        e.target.style.backgroundColor = "white";
+        e.target.style.color = "#0d9488";
+        e.target.style.border = "2px solid #0d9488";
+      }}
+      onMouseLeave={(e) => {
+        e.target.style.backgroundColor = "#0d9488";
+        e.target.style.color = "white";
+        e.target.style.border = "2px solid transparent";
+      }}
+    >
+      {text}
+    </button>
+  );
+}
+
+/* ========================= */
+/*     OAUTH BUTTONS         */
+/* ========================= */
+
+function OAuthButton({ provider, label, logo }) {
+  return (
+    <button
+      onClick={() =>
+        (window.location.href = `http://localhost:4000/auth/${provider}`)
+      }
       style={{
         width: "260px",
         padding: "14px 20px",
@@ -277,7 +269,7 @@ function OAuthButton({ logo, provider }) {
         fontWeight: "600",
         display: "flex",
         alignItems: "center",
-        justifyContent: "space-between",   // LOGO RIGHT
+        justifyContent: "space-between",
         cursor: "pointer",
         transition: "0.25s ease",
         fontFamily: "Helvetica",
@@ -293,7 +285,7 @@ function OAuthButton({ logo, provider }) {
         e.target.style.border = "2px solid transparent";
       }}
     >
-      <span>Continue with {provider}</span>
+      <span>Continue with {label}</span>
       <img src={logo} alt="" style={{ width: "22px" }} />
     </button>
   );
