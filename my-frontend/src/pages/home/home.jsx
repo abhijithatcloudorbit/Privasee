@@ -105,6 +105,32 @@ export default function Home() {
           >
             Sign Up
           </button>
+                    {/* Continue as Guest */}
+          <button
+            onClick={() => navigate("/dashboard")}
+            style={{
+              background: "#0d9488",
+              color: "#fff",
+              padding: "14px 34px",
+              borderRadius: 999,
+              border: "none",
+              fontWeight: 700,
+              fontSize: "1.3rem",
+              cursor: "pointer",
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.backgroundColor = "white";
+              e.target.style.color = "#0d9488";
+              e.target.style.border = "2px solid #0d9488";
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.backgroundColor = "#0d9488";
+              e.target.style.color = "white";
+              e.target.style.border = "2px solid transparent";
+            }}            
+          >
+            Continue as Guest
+          </button>
         </div>
       </motion.div>
     </MainLayout>
