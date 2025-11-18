@@ -1,0 +1,33 @@
+1. Functional Test Cases
+Test Case ID	Test Scenario	Input	Expected Output	Industry / Use Case
+F1	Detect and blur human faces	Image with multiple people	All faces blurred; background intact	Healthcare / Automotive
+F2	Detect license plates in dashcam feed	Road video footage	License plates blurred, rest visible	Automotive
+F3	Mask textual identifiers (e.g., names, IDs)	Document scan / patient record	Text fields redacted or blurred	Healthcare / Insurance
+F4	Process batch images through API	50 test images uploaded via API	All outputs privacy-filtered and downloadable	SaaS Cloud API
+F5	Handle unsupported file types	TIFF file input	Display “Unsupported format” error	All
+F6	Maintain image resolution after blurring	HD input image (1920×1080)	Output resolution unchanged	All
+F7	Enable “manual override” for anonymization	Masked image reviewed by admin	Option to unmask or remask areas	Healthcare / Research
+2. Performance Test Cases
+Test Case ID	Test Scenario	Input Load	Expected Output	Metric / Threshold
+P1	Measure processing latency	100 images of 5MB each	Processing completed under 3 sec/image	< 3 sec per image
+P2	Test scalability of API	1,000 concurrent requests	99% successful responses	Throughput ≥ 500 req/s
+P3	Edge device processing	Run model on embedded board	Output within 2 sec	≤ 2 sec latency
+P4	Memory optimization test	Continuous 10-min video	No memory overflow	Stable RAM < 80%
+P5	Upload retry mechanism	Interrupted upload	Resume from last chunk	No data loss
+P6	Multi-thread performance	Parallel 8-core execution	CPU load evenly distributed	Utilization ≤ 90%
+3. Accuracy Test Cases
+Test Case ID	Scenario	Expected Metric	Validation Method
+A1	Face detection accuracy	≥ 95% precision / recall	Manual labeling & comparison
+A2	License plate detection	≥ 90% accuracy	Dataset with annotated plates
+A3	OCR text anonymization	≥ 93% F1 score	Compare detected vs. ground-truth text
+A4	Edge-case detection (partial faces, shadows)	≥ 85% accuracy	Synthetic and real-world images
+A5	False positive control	≤ 5% non-sensitive blurring	Visual QA check
+A6	Cross-domain generalization	Similar accuracy across healthcare, automotive, manufacturing	Cross-validation
+4. Compliance and Security Test Cases
+Test Case ID	Scenario	Compliance Target	Expected Result
+C1	Verify anonymization logs are generated	GDPR Article 30	Log entries created with timestamp, image ID
+C2	Test raw image deletion policy	HIPAA / GDPR	Original image auto-deleted after processing
+C3	Validate consent-tracking mechanism	DPDP Act (India)	User consent stored before image upload
+C4	Data encryption during transfer	ISO 27001	AES-256 encryption applied
+C5	Check audit-trail accessibility	HIPAA	Admin can retrieve anonymization reports
+C6	Cross-border data handling	GDPR	Process limited to approved regions only
