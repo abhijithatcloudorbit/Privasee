@@ -175,3 +175,5 @@ export default function DashboardPage() {
     </>
   );
 }
+
+/* Should restructure the code and create reusable components and should use tailwindcss */
