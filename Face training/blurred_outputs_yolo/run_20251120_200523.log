@@ -1,0 +1,11 @@
+2025-11-20 20:05:39,296 [INFO] Found local YOLO face weights: yolov8n-face.pt
+2025-11-20 20:05:39,437 [INFO] Loaded YOLO model from local file.
+2025-11-20 20:05:39,440 [INFO] Starting detection & blur run on 374 images
+2025-11-20 20:07:56,918 [INFO] Run complete.
+2025-11-20 20:07:56,918 [INFO] Images processed: 374
+2025-11-20 20:07:56,920 [INFO] Images with >=1 face detected: 364
+2025-11-20 20:07:56,920 [INFO] Total faces detected: 2694
+2025-11-20 20:07:56,920 [INFO] Avg faces per image: 7.203
+2025-11-20 20:07:56,921 [INFO] Outputs written to: C:\Users\jorda\Downloads\Face training\blurred_outputs_yolo
+2025-11-20 20:07:56,926 [INFO] Sample outputs (first 5) in: C:\Users\jorda\Downloads\Face training\blurred_outputs_yolo\samples
+2025-11-20 20:07:56,927 [WARNING] 10 images had no detected faces. For those, try lowering thresholds or using a stronger detector (YOLO face weights).
