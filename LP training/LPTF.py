@@ -1,3 +1,4 @@
+#Code which can be used for intergration
 import os
 import cv2
 import numpy as np
@@ -6,24 +7,19 @@ from fastapi.responses import StreamingResponse, JSONResponse
 from ultralytics import YOLO
 from io import BytesIO
 
-# ---------------------------------------------------
 # LOAD YOLO MODEL
-# ---------------------------------------------------
 MODEL_PATH = r"C:\Users\jorda\Downloads\LP training\license_plate_detector.pt"
 
 print("Loading YOLOv8 license plate model...")
 model = YOLO(MODEL_PATH)
 print("Model loaded successfully")
 
-# ---------------------------------------------------
+
 # FASTAPI INIT
-# ---------------------------------------------------
 app = FastAPI(title="License Plate Blurring API")
 
 
-# ---------------------------------------------------
-# IMAGE PREPROCESSING
-# ---------------------------------------------------
+#  PREPROCESSING
 def preprocess_image(img):
     h, w = img.shape[:2]
 
@@ -42,10 +38,7 @@ def preprocess_image(img):
 
     return img
 
-
-# ---------------------------------------------------
 # BLUR METHOD
-# ---------------------------------------------------
 def blur_region(image, x1, y1, x2, y2):
     roi = image[y1:y2, x1:x2]
     k = max(21, (abs(x2 - x1) // 4) | 1)
@@ -54,9 +47,7 @@ def blur_region(image, x1, y1, x2, y2):
     return image
 
 
-# ---------------------------------------------------
 # MAIN PROCESSING FUNCTION
-# ---------------------------------------------------
 def process_image_bytes(image_bytes):
     # Convert upload → cv2 image
     file_bytes = np.frombuffer(image_bytes, np.uint8)
@@ -90,9 +81,7 @@ def process_image_bytes(image_bytes):
     return img_processed, blurred
 
 
-# ---------------------------------------------------
 # API ENDPOINT: UPLOAD + BLUR + RETURN OUTPUT
-# ---------------------------------------------------
 @app.post("/blur")
 async def blur_license_plate(file: UploadFile = File(...)):
     if file.content_type not in ["image/png", "image/jpeg", "image/jpg"]:
@@ -105,7 +94,6 @@ async def blur_license_plate(file: UploadFile = File(...)):
     if processed_img is None:
         return JSONResponse({"error": "Invalid image"}, status_code=400)
 
-    # Convert CV image → bytes buffer for response
     _, buffer = cv2.imencode(".jpg", processed_img)
     io_buf = BytesIO(buffer.tobytes())
 
@@ -118,9 +106,7 @@ async def blur_license_plate(file: UploadFile = File(...)):
     )
 
 
-# ---------------------------------------------------
 # ROOT ENDPOINT
-# ---------------------------------------------------
 @app.get("/")
 def home():
     return {"message": "License Plate Privacy API is running!"}
