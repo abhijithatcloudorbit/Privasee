@@ -1,0 +1,10 @@
+In this pipeline, text extraction is handled through a dual-OCR strategy to maximize accuracy. 
+Tesseract is used as the primary OCR engine because it provides detailed word-level bounding boxes 
+through image_to_data, which helps in precisely locating and anonymizing sensitive text. 
+
+If Tesseract fails to detect text properly—due to low-quality images, stylized fonts, 
+or rotated content—the system automatically switches to EasyOCR as the fallback engine. 
+
+EasyOCR handles noisy, handwritten, and non-standard fonts better, ensuring that text is 
+still captured even when Tesseract misses it. This combined approach improves robustness and
+ reduces the chance of unblurred sensitive information.
