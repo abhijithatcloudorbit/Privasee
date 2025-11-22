@@ -1,3 +1,4 @@
+# the code which can be used for integration
 import cv2
 import numpy as np
 from fastapi import FastAPI, File, UploadFile

@@ -18,7 +18,6 @@ print("Model loaded successfully")
 
 # IMAGE PREPROCESSING FOR FAR LICENSE PLATES
 def preprocess_image(img):
-    # Step 1: Increase resolution of small images
     h, w = img.shape[:2]
     if max(h, w) < 720:
         scale = 720 / max(h, w)
@@ -77,7 +76,7 @@ def process_image(image_path, output_path):
         print("No license plate detected in:", os.path.basename(image_path))
 
     return blurred
-# MAIN EXECUTION
+
 if __name__ == "__main__":
     images = [f for f in os.listdir(INPUT_DIR)
               if f.lower().endswith((".png", ".jpg", ".jpeg"))]
