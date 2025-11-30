@@ -1,0 +1,481 @@
+<h1>Playground</h1>
+
+<!--Heading -->
+<app-heading-atom [level]="1" color="#111" weight="700">
+  Playground
+</app-heading-atom>
+
+<app-heading-atom [level]="3" color="#444" weight="600">
+  This is HeadingAtom (H3)
+</app-heading-atom>
+
+
+<br><br>
+<h2>Accordion Demo</h2>
+
+<app-accordion-atom label="Section 1">
+  <p>This is the content of section 1.</p>
+</app-accordion-atom>
+
+<app-accordion-atom label="Advanced Settings" [open]="true">
+  <p>Opened by default.</p>
+</app-accordion-atom>
+
+<app-accordion-atom label="Disabled Section" [disabled]="true">
+  <p>You should not see this unless removed disabled.</p>
+</app-accordion-atom>
+
+<br><br>
+
+<app-tabs-atom
+  [tabs]="[
+    { label: 'Overview' },
+    { label: 'Settings' },
+    { label: 'Disabled', disabled: true }
+  ]"
+  [(activeIndex)]="currentTab"
+>
+  <div tabContent *ngIf="currentTab === 0">
+    Overview Content
+  </div>
+
+  <div tabContent *ngIf="currentTab === 1">
+    Settings Content
+  </div>
+
+  <div tabContent *ngIf="currentTab === 2">
+    Disabled content (won`t open)
+  </div>
+</app-tabs-atom>
+
+
+
+<br><br>
+
+<app-card-atom padding="24px">
+  <h2>ToggleButtonAtom Demo</h2>
+
+  <app-toggle-button-atom
+    [options]="toggleOptions"
+    [(value)]="selectedMode"
+    color="#2563eb"
+  ></app-toggle-button-atom>
+
+  <br><br>
+
+<!--Modal-->
+
+<br><br>
+
+<app-card-atom padding="24px">
+  <h2>ModalAtom Demo</h2>
+
+  <app-button-atom color="primary" (click)="openModal()">
+    Open Modal
+  </app-button-atom>
+</app-card-atom>
+
+<!-- Modal -->
+<app-card-atom padding="24px">
+  <h2>ModalAtom Demo</h2>
+
+  <app-button-atom color="primary" (click)="openModal()">
+    Open Modal
+  </app-button-atom>
+</app-card-atom>
+
+<!-- FIXED MODAL -->
+<app-modal-atom [(open)]="modalOpen" width="520px">
+
+  <!-- HEADER -->
+  <div modal-header>
+    Modal Title
+  </div>
+
+  <!-- BODY -->
+  <div modal-body>
+    <p>This is a reusable Modal Atom.</p>
+    <p>You can place any content here.</p>
+  </div>
+
+  <!-- FOOTER -->
+  <div modal-footer>
+    <app-button-atom color="danger" (click)="closeModal()">
+      Cancel
+    </app-button-atom>
+
+    <app-button-atom color="primary" (click)="closeModal()">
+      Confirm
+    </app-button-atom>
+  </div>
+
+</app-modal-atom>
+
+<br><br>
+
+<!-- Snack Bar Card -->
+ <app-card-atom padding="24px">
+  <h2>Snackbar Demo</h2>
+
+  <app-button-atom color="primary" (click)="showSnackbar()">
+    Show Snackbar
+  </app-button-atom>
+</app-card-atom>
+
+<app-snackbar-atom
+  [(open)]="snackbarOpen"
+  message="This is a snackbar!"
+  type="success"
+  position="bottom-right"
+  [duration]="3000">
+</app-snackbar-atom>
+
+<br><br>
+
+<!-- Toast -->
+ <app-card-atom padding="24px">
+  <h2>Toast Demo</h2>
+
+  <app-button-atom color="primary" (click)="showSuccessToast()">
+    Show Success Toast
+  </app-button-atom>
+
+  <app-button-atom color="secondary" (click)="showUndoToast()">
+    Show Undo Toast
+  </app-button-atom>
+</app-card-atom>
+
+<!-- Toast Host (must be placed ONCE) -->
+<app-toast-atom></app-toast-atom>
+<br><br>
+
+<p>Selected: {{ selectedMode }}</p>
+</app-card-atom>
+
+
+<br><br>
+
+<app-card-atom padding="24px">
+  <h2>TextareaAtom Demo</h2>
+
+  <app-textarea-atom
+    placeholder="Write something..."
+    [(value)]="bioText"
+    [rows]="3"
+    [autoResize]="true"
+  ></app-textarea-atom>
+
+  <br>
+
+  <p><strong>Typed:</strong> {{ bioText }}</p>
+</app-card-atom>
+
+
+
+<br><br>
+
+<br><br>
+
+<app-card-atom padding="24px">
+  <h2>SliderAtom Demo</h2>
+
+<app-slider-atom
+  [min]="0"
+  [max]="200"
+  [step]="5"
+  [value]="80"
+  appearance="outlined"
+  (valueChange)="log($event)"
+></app-slider-atom>
+
+<br><br>
+
+<app-button-atom color="primary">Hello Button</app-button-atom>
+
+
+<!-- Button -->
+<app-button-atom color="primary">
+  Hello Button
+</app-button-atom>
+
+<br><br>
+
+<!-- Text Input -->
+<app-text-input-atom placeholder="Enter your name"></app-text-input-atom>
+
+<br><br>
+
+<app-divider-atom [thickness]="4" color="#2563eb"></app-divider-atom>
+
+<h2>Chip Demo</h2>
+
+<!-- Simple Chip -->
+<app-chip-atom label="Angular" color="#dd1b16"></app-chip-atom>
+
+<br><br>
+
+<!-- Outline Chip -->
+<app-chip-atom
+  label="Typescript"
+  color="#3178c6"
+  variant="outline"
+></app-chip-atom>
+
+<br><br>
+
+<!-- Chip with Icon -->
+<app-chip-atom
+  label="Home"
+  color="#10b981"
+  textColor="#fff"
+  icon="home"
+></app-chip-atom>
+
+<br><br>
+
+<!-- Removable Chip -->
+<app-chip-atom
+  label="Removable"
+  color="#f97316"
+  textColor="#fff"
+  [removable]="true"
+></app-chip-atom>
+
+<h2>Checkbox Demo</h2>
+
+<app-checkbox-atom
+  label="Accept Terms"
+  [size]="20"
+  [control]="termsControl"
+  (removed)="onChipRemoved()"
+></app-checkbox-atom>
+
+
+
+<!-- Card Atom -->
+<app-card-atom padding="24px">
+  <h2>Card Title</h2>
+  <p>This is inside a card atom.</p>
+</app-card-atom>
+
+<br><br>
+
+<h2>RadioAtom Demo</h2>
+
+<app-radio-atom
+  label="Option 1"
+  value="option1"
+  [control]="radioControl"
+  [size]="20"
+  color="#2563eb"
+></app-radio-atom>
+
+<br>
+
+<app-radio-atom
+  label="Option 2"
+  value="option2"
+  [control]="radioControl"
+  [size]="20"
+  color="#10b981"
+></app-radio-atom>
+
+<br>
+
+<app-radio-atom
+  label="Option 3"
+  value="option3"
+  [control]="radioControl"
+  [size]="20"
+  color="#f97316"
+></app-radio-atom>
+
+
+<!-- Icon Demo Card -->
+<app-card-atom padding="24px">
+  <h2>Icon Demo</h2>
+
+  <!-- Important: size is a NUMBER, must use [] -->
+  <app-icon-atom name="home" [size]="40" color="#2563eb"></app-icon-atom>
+  <app-icon-atom name="favorite" [size]="32" color="red"></app-icon-atom>
+  <app-icon-atom name="search" [size]="28"></app-icon-atom>
+
+</app-card-atom>
+
+<br><br>
+
+<app-text-atom size="18px" weight="600" color="#333">
+  This is TextAtom — bold 18px.
+</app-text-atom>
+
+<br><br>
+
+<app-text-atom size="14px" color="#666" weight="400" align="center">
+  Muted, centered small text.
+</app-text-atom>
+
+<br><br>
+
+<app-text-atom size="12px" color="#999" weight="300" lineHeight="1.2">
+  Micro text with tight line height.
+</app-text-atom>
+
+<br><br>
+
+<app-card-atom padding="24px">
+  <h2>Avatar Demo</h2>
+
+  <!-- Image Avatar -->
+  <app-avatar-atom
+    src="https://i.pravatar.cc/150?img=3"
+    [size]="60"
+    shape="circle"
+  ></app-avatar-atom>
+
+  <br><br>
+
+  <!-- Initials -->
+  <app-avatar-atom
+    initials="AK"
+    [size]="60"
+    shape="rounded"
+    bg="#dbeafe"
+    color="#1e3a8a"
+  ></app-avatar-atom>
+
+  <br><br>
+
+  <!-- Broken image → fallback initials -->
+  <app-avatar-atom
+    src="https://broken-image.url"
+    initials="AA"
+    [size]="48"
+    shape="square"
+    bg="#fef3c7"
+    color="#92400e"
+  ></app-avatar-atom>
+</app-card-atom>
+
+<br><br>
+<br><br>
+
+<app-card-atom padding="24px">
+  <h2>Avatar Demo</h2>
+
+  <!-- Image Avatar -->
+  <app-avatar-atom
+    src="https://i.pravatar.cc/150?img=3"
+    [size]="60"
+    shape="circle"
+  ></app-avatar-atom>
+
+  <br><br>
+
+  <!-- Initials -->
+  <app-avatar-atom
+    initials="AK"
+    [size]="60"
+    shape="rounded"
+    bg="#dbeafe"
+    color="#1e3a8a"
+  ></app-avatar-atom>
+
+  <br>
+
+
+  <!-- Broken image → fallback initials -->
+  <app-avatar-atom
+    src="https://broken-image.url"
+    initials="AA"
+    [size]="48"
+    shape="square"
+    bg="#fef3c7"
+    color="#92400e"
+  ></app-avatar-atom>
+</app-card-atom>
+
+<br><br>
+
+<app-loader-atom [size]="40" color="red"></app-loader-atom>
+
+
+<app-card-atom padding="24px">
+  <h2>Tag Demo</h2>
+
+  <app-tag-atom label="Angular" color="#dd1b16"></app-tag-atom>
+  <app-tag-atom label="Typescript" color="#3178c6" variant="outline"></app-tag-atom>
+  <app-tag-atom label="Removable" color="#10b981" [removable]="true"></app-tag-atom>
+
+</app-card-atom>
+
+<app-divider-atom></app-divider-atom>
+
+<div style="display: flex; align-items: center;">
+  <app-icon-atom name="home"></app-icon-atom>
+  <app-spacer-atom orientation="horizontal" [size]="16"></app-spacer-atom>
+  <app-icon-atom name="search"></app-icon-atom>
+</div>
+
+<h2>Badge Demo</h2>
+
+<app-badge-atom label="New"></app-badge-atom>
+
+<br><br>
+
+<app-badge-atom label="Active" color="#DCFCE7" textColor="#166534"></app-badge-atom>
+
+<br><br>
+
+<app-badge-atom label="Warning" color="#FEF3C7" textColor="#92400E" size="lg"></app-badge-atom>
+
+<br><br>
+
+<app-badge-atom label="Admin" color="#DBEAFE" textColor="#1E40AF" [rounded]="true"></app-badge-atom>
+
+<br><br>
+<app-card-atom padding="24px">
+  <h2>SwitchAtom Demo</h2>
+
+  <app-switch-atom
+    [(checked)]="switchValue"
+    color="#22c55e"
+  ></app-switch-atom>
+
+  <br><br>
+
+  <p>Switch value: {{ switchValue }}</p>
+
+  <br>
+
+  <app-switch-atom
+    [checked] = "true"
+    [disabled] = "true"
+  ></app-switch-atom>
+
+</app-card-atom>
+
+
+<app-tooltip-atom text="Click to submit" position="top">
+  <app-button-atom color="primary">Submit</app-button-atom>
+</app-tooltip-atom>
+
+<br><br>
+
+<app-card-atom padding="24px">
+  <h2>Dropdown Demo</h2>
+
+  <app-dropdown-atom
+    placeholder="Select a country"
+    [options]="[
+      { label: 'India', value: 'IN' },
+      { label: 'USA', value: 'US' },
+      { label: 'Germany', value: 'DE' },
+      { label: 'Japan', value: 'JP', disabled: true }
+    ]"
+    [value]="selectedCountry"
+    (valueChange)="selectedCountry = $event"
+  >
+  </app-dropdown-atom>
+
+  <p>Selected: {{ selectedCountry }}</p>
+</app-card-atom>

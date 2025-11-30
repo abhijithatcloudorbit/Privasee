@@ -1,0 +1,23 @@
+<div class="accordion" [class.disabled]="disabled">
+  <!-- Header -->
+  <button
+    class="accordion-header"
+    type="button"
+    [disabled]="disabled"
+    (click)="toggle()"
+  >
+    <span class="accordion-label">{{ label }}</span>
+
+    <span
+      class="arrow"
+      [class.open]="open"
+    >
+      ▼
+    </span>
+  </button>
+
+  <!-- Content -->
+  <div class="accordion-body" *ngIf="open">
+    <ng-content></ng-content>
+  </div>
+</div>

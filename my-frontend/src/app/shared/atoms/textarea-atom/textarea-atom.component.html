@@ -1,0 +1,13 @@
+<div class="textarea-wrapper" [class.disabled]="disabled">
+  <textarea
+    [rows]="rows"
+    [placeholder]="placeholder"
+    [disabled]="disabled"
+    [(ngModel)]="value"
+    (input)="onInput($event)"
+  ></textarea>
+
+  <div class="error-message" *ngIf="error">
+    {{ error }}
+  </div>
+</div>

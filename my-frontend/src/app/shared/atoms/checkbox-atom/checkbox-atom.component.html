@@ -1,0 +1,33 @@
+<label class="checkbox-container">
+  <input
+    type="checkbox"
+    [formControl]="control"
+    (change)="onChange($event)"
+  />
+
+  <span
+    class="checkmark"
+    [style.width.px]="size"
+    [style.height.px]="size"
+    [style.borderColor]="color"
+    [style.background]="control.value ? color : 'transparent'"
+  >
+    <svg
+      *ngIf="control.value"
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      class="tick"
+      [style.width.px]="size - 6"
+      [style.height.px]="size - 6"
+      stroke="white"
+      stroke-width="3"
+      fill="none"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <polyline points="20 6 9 17 4 12"></polyline>
+    </svg>
+  </span>
+
+  <span class="label-text">{{ label }}</span>
+</label>
