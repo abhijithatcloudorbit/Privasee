@@ -1,0 +1,8 @@
+<input
+  [type]="type"
+  [placeholder]="placeholder"
+  [disabled]="disabled"
+  [value]="value"
+  (input)="valueChange.emit($any($event.target).value)"
+  class="c-input"
+/>

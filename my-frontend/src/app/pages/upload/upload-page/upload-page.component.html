@@ -1,0 +1,116 @@
+<div class="container">
+    <div class="card header">
+        <h1>Upload Manager</h1>
+        <p class="subtitle">Upload and process images or videos with batch processing capabilities</p>
+    </div>
+
+    <div class="card">
+        <div class="section-title">
+            <i class="fas fa-cloud-upload-alt"></i>
+            File Upload
+            <span class="test-badge">Test Case F5</span>
+        </div>
+        
+        <div class="upload-area" id="uploadArea" 
+             (click)="handleUploadClick()"
+             (dragover)="handleDragOver($event)"
+             (dragleave)="handleDragLeave()"
+             (drop)="handleDrop($event)">
+            <div class="upload-icon">
+                <i class="fas fa-cloud-upload-alt"></i>
+            </div>
+            <div class="upload-text">Drop images or videos here</div>
+            <div class="upload-subtext">or click to browse files from your device</div>
+            
+            <div class="file-types">
+                <span class="file-type-tag">JPG</span>
+                <span class="file-type-tag">PNG</span>
+                <span class="file-type-tag">MP4</span>
+                <span class="file-type-tag">AVI</span>
+            </div>
+        </div>
+        
+        <div class="button-group">
+            <button class="btn btn-primary" (click)="handleUploadButton()">
+                <i class="fas fa-upload"></i>
+                Upload Files
+            </button>
+            <button class="btn btn-secondary" (click)="handleSecondaryButton()">
+                <i class="fas fa-cog"></i>
+                Secondary Action
+            </button>
+            <button class="btn btn-ghost" (click)="handleGhostButton()">
+                <i class="fas fa-magic"></i>
+                Ghost Action
+            </button>
+        </div>
+    </div>
+
+    <div class="sidebar">
+        <div class="card">
+            <div class="section-title">
+                <i class="fas fa-tasks"></i>
+                Batch Processing
+            </div>
+            
+            <div class="batch-info">
+                <div>
+                    <div class="batch-count">{{ batchStatus.totalFiles }}</div>
+                    <div class="batch-label">Files in queue</div>
+                </div>
+                <i class="fas fa-layer-group batch-icon"></i>
+            </div>
+            
+            <div class="batch-progress">
+                <div class="progress-text">
+                    <span>{{ progressStatus }}</span>
+                    <span>{{ progressPercentage }}%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" [style.width.%]="progressPercentage"></div>
+                </div>
+                <div class="progress-text">
+                    <span>Queue</span>
+                    <span>{{ batchStatus.totalFiles }} {{ batchStatus.totalFiles === 1 ? 'file' : 'files' }}</span>
+                </div>
+            </div>
+            
+            <button class="btn btn-primary" (click)="startProcessing()" [disabled]="batchStatus.isProcessing || batchStatus.totalFiles === 0">
+                <i class="fas fa-play-circle"></i>
+                {{ batchStatus.isProcessing ? 'Processing...' : 'Start Processing' }}
+            </button>
+        </div>
+
+        <div class="card">
+            <div class="section-title">
+                <i class="fas fa-image"></i>
+                Image Preview
+            </div>
+            
+            <div class="preview-container">
+                <div class="preview-image">
+                    <div class="image-placeholder" *ngIf="!previewImageUrl">
+                        <i class="fas fa-image"></i>
+                        Preview will appear here
+                    </div>
+                    <img [src]="previewImageUrl" *ngIf="previewImageUrl" alt="Preview">
+                </div>
+                
+                <div class="image-info">
+                    <div class="info-row">
+                        <span class="info-label">Selected file:</span>
+                        <span class="info-value">{{ currentFile.name }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Size:</span>
+                        <span class="info-value">{{ currentFile.size }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Dimensions:</span>
+                        <span class="info-value">{{ currentFile.dimensions }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,17 @@
+<button 
+  class="c-btn c-btn--primary"
+  [class.c-btn--loading]="loading"
+  [disabled]="disabled || loading"
+  (click)="onClick.emit($event)">
+  
+  <!-- Loading spinner -->
+  <span *ngIf="loading" class="c-btn__spinner"></span>
+  
+  <!-- Icon (if provided) -->
+  <span *ngIf="icon && !loading" class="c-btn__icon">{{icon}}</span>
+  
+  <!-- Button content -->
+  <span class="c-btn__text">
+    <ng-content></ng-content>
+  </span>
+</button>
