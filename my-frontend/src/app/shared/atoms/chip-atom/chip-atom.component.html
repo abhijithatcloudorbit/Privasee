@@ -1,0 +1,22 @@
+<div
+  class="chip"
+  [ngClass]="classes"
+  [style.background]="variant === 'solid' ? color : 'transparent'"
+  [style.color]="variant === 'solid' ? textColor : color"
+  [style.borderColor]="color"
+  (click)="onClick()"
+>
+  <!-- Optional leading icon -->
+  <app-icon-atom *ngIf="icon" [name]="icon" [size]="16"></app-icon-atom>
+
+  {{ label }}
+
+  <!-- Optional remove button -->
+  <button
+    *ngIf="removable"
+    class="chip-remove"
+    (click)="onRemove($event)"
+  >
+    ×
+  </button>
+</div>

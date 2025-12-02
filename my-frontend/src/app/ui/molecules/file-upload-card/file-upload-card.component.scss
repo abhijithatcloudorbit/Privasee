@@ -1,0 +1,65 @@
+.c-upload-card {
+  background-color: white;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+  max-width: 32rem;
+  margin: 0 auto;
+
+  &__title {
+    margin-bottom: 0.5rem;
+  }
+
+  &__description {
+    margin-bottom: 1.5rem;
+  }
+
+  &__dropzone {
+    border: 2px dashed var(--color-border);
+    border-radius: 6px;
+    padding: 2rem;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    transition: border-color 0.15s ease;
+
+    &:hover {
+      border-color: var(--color-primary);
+    }
+  }
+
+  &__hint {
+    margin-top: 0.5rem;
+  }
+
+  &__files {
+    margin-bottom: 1.5rem;
+  }
+
+  &__files-title {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+  }
+
+  &__file-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  &__file-item {
+    font-size: 0.875rem;
+    padding: 0.25rem 0;
+    color: var(--color-gray-700);
+    border-bottom: 1px solid var(--color-border);
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+  }
+}

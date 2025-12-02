@@ -1,0 +1,18 @@
+<div class="toast-container">
+  <div
+    class="toast"
+    *ngFor="let t of toasts"
+    [class]="t.type"
+    @fadeSlide
+  >
+    <span class="message">{{ t.message }}</span>
+
+    <div class="actions">
+      <button *ngIf="t.actionText" (click)="onAction(t)">
+        {{ t.actionText }}
+      </button>
+
+      <button class="close" (click)="removeToast(t.id)">✕</button>
+    </div>
+  </div>
+</div>

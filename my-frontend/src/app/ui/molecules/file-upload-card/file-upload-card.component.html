@@ -1,0 +1,13 @@
+<div class="c-upload-card">
+  <div class="c-upload-card__index">#{{ index + 1 }}</div>
+
+  <div class="c-upload-card__content">
+    <div class="c-upload-card__name">
+      {{ file.size | number }} bytes
+    </div>
+
+    <div class="c-upload-card__meta">
+      {{ file?.size || 0 | number }} bytes
+    </div>
+  </div>
+</div>

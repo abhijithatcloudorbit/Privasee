@@ -1,0 +1,9 @@
+<div class="c-progress" [class]="'c-progress--' + size + ' c-progress--' + variant">
+  <div class="c-progress__track">
+    <div class="c-progress__fill" [style.width.%]="percentage"></div>
+  </div>
+  
+  <div *ngIf="showLabel" class="c-progress__label">
+    {{value}} / {{max}}
+  </div>
+</div>

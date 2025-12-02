@@ -1,0 +1,11 @@
+<nav class="c-nav-tabs" *ngIf="items?.length">
+  <button
+    type="button"
+    class="c-nav-tabs__item"
+    *ngFor="let item of items"
+    [class.c-nav-tabs__item--active]="isActive(item)"
+    (click)="onTabClick(item)"
+  >
+    {{ item.label }}
+  </button>
+</nav>

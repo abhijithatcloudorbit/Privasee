@@ -1,0 +1,46 @@
+.c-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  white-space: nowrap;
+  
+  // Variants
+  &--primary {
+    background-color: var(--color-primary-100);
+    color: var(--color-primary-800);
+  }
+  
+  &--success {
+    background-color: rgba(16, 185, 129, 0.1);
+    color: var(--color-success-dark);
+  }
+  
+  &--warning {
+    background-color: rgba(245, 158, 11, 0.1);
+    color: var(--color-warning-dark);
+  }
+  
+  &--error {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: var(--color-error-dark);
+  }
+  
+  &--gray {
+    background-color: var(--color-gray-100);
+    color: var(--color-gray-700);
+  }
+  
+  // Sizes
+  &--sm {
+    font-size: 0.75rem;
+    padding: 0.125rem 0.5rem;
+    border-radius: 0.25rem;
+  }
+  
+  &--md {
+    font-size: 0.875rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 0.375rem;
+  }
+}

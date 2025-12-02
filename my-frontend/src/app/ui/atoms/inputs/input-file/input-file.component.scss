@@ -1,0 +1,46 @@
+.c-input-file {
+  &__label {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    cursor: pointer;
+  }
+  
+  &__input {
+    display: none;
+  }
+  
+  &__button {
+    padding: 0.5rem 1rem;
+    background-color: var(--color-gray-100);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-gray-700);
+    transition: all 0.2s ease;
+    
+    &:hover:not(:disabled) {
+      background-color: var(--color-gray-200);
+      border-color: var(--color-border-hover);
+    }
+    
+    &:active:not(:disabled) {
+      transform: translateY(1px);
+    }
+  }
+  
+  &__name {
+    font-size: 0.875rem;
+    color: var(--color-gray-600);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  &__error {
+    margin-top: 0.5rem;
+    font-size: 0.75rem;
+    color: var(--color-error);
+  }
+}

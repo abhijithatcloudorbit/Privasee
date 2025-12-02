@@ -1,0 +1,13 @@
+<span
+  class="tag"
+  [ngClass]="[variant, size]"
+  [style.borderColor]="color"
+  [style.backgroundColor]="variant === 'solid' ? color : 'transparent'"
+  [style.color]="variant === 'solid' ? '#fff' : color"
+>
+  {{ label }}
+
+  <button class="close-btn" *ngIf="removable" (click)="removeTag()">
+    &times;
+  </button>
+</span>

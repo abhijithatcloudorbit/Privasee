@@ -1,0 +1,22 @@
+<div class="c-batch-panel">
+  <h3 class="c-batch-panel__title">Batch Processing</h3>
+  
+  @if (files && files.length > 0) {
+    <div class="c-batch-list">
+      @for (file of files; track $index) {
+        <div class="c-batch-item">
+          <div class="c-batch-item__progress">
+            <div class="c-batch-item__progress-bar" [style.width.%]="($index / files.length) * 100"></div>
+          </div>
+          <span class="c-batch-item__name">File {{$index + 1}}</span>
+        </div>
+      }
+    </div>
+    
+    <div class="c-batch-actions">
+      <button class="c-btn c-btn--primary">Start Processing</button>
+    </div>
+  } @else {
+    <p class="c-batch-panel__empty">No files in batch</p>
+  }
+</div>

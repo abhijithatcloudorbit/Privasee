@@ -1,38 +1,77 @@
 {
-  "name": "my-frontend",
-  "private": true,
+  "name": "image-privacy-filter-frontend",
   "version": "0.0.0",
-  "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "lint": "eslint .",
-    "preview": "vite preview"
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development",
+    "test": "ng test",
+    "test:watch": "ng test --watch",
+    "lint": "ng lint",
+    "lint:fix": "ng lint --fix",
+    "format": "prettier --write \"src/**/*.{ts,html,scss,json}\"",
+    "prepare": "husky install",
+    "generate:component": "ng generate component",
+    "generate:service": "ng generate service"
   },
+  "prettier": {
+    "printWidth": 100,
+    "singleQuote": true,
+    "overrides": [
+      {
+        "files": "*.html",
+        "options": {
+          "parser": "angular"
+        }
+      }
+    ]
+  },
+  "private": true,
+  "packageManager": "npm@11.6.3",
   "dependencies": {
-    "@emotion/react": "^11.14.0",
-    "@emotion/styled": "^11.14.1",
-    "@mui/material": "^7.3.5",
-    "@vitejs/plugin-react": "^5.1.1",
-    "axios": "^1.13.2",
-    "framer-motion": "^12.23.24",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
-    "react-hook-form": "^7.66.0",
-    "react-router-dom": "^7.9.6",
-    "typewriter-effect": "^2.22.0"
+    "@angular/cdk": "^21.0.1",
+    "@angular/common": "^21.0.2",
+    "@angular/compiler": "^21.0.2",
+    "@angular/core": "^21.0.2",
+    "@angular/forms": "^21.0.2",
+    "@angular/platform-browser": "^21.0.2",
+    "@angular/platform-browser-dynamic": "^21.0.2",
+    "@angular/router": "^21.0.2",
+    "chart.js": "^4.5.1",
+    "gsap": "^3.13.0",
+    "inter-ui": "^4.1.1",
+    "ng2-charts": "^8.0.0",
+    "ngx-file-drop": "^16.0.0",
+    "ngx-spinner": "^19.0.0",
+    "ngx-toastr": "^19.1.0",
+    "ngx-webstorage": "^21.0.1",
+    "rxjs": "~7.8.0",
+    "screenfull": "^6.0.2",
+    "tslib": "^2.3.0",
+    "zone.js": "^0.16.0"
   },
   "devDependencies": {
-    "@eslint/js": "^9.39.1",
-    "@types/react": "^19.2.2",
-    "@types/react-dom": "^19.2.2",
-    "@vitejs/plugin-react-swc": "^4.2.1",
+    "@angular-eslint/eslint-plugin": "^21.0.1",
+    "@angular/build": "^21.0.1",
+    "@angular/cli": "^21.0.1",
+    "@angular/compiler-cli": "^21.0.0",
+    "@types/jasmine": "^5.1.13",
+    "@types/node": "^24.10.1",
+    "@typescript-eslint/eslint-plugin": "^8.48.0",
+    "@typescript-eslint/parser": "^8.48.0",
     "eslint": "^9.39.1",
-    "eslint-plugin-react-hooks": "^7.0.1",
-    "eslint-plugin-react-refresh": "^0.4.24",
-    "globals": "^16.5.0",
-    "vite": "^7.2.2"
+    "husky": "^9.1.7",
+    "jasmine-core": "^5.12.1",
+    "karma": "^6.4.4",
+    "karma-chrome-launcher": "^3.2.0",
+    "karma-coverage": "^2.2.1",
+    "karma-jasmine": "^5.1.0",
+    "karma-jasmine-html-reporter": "^2.1.0",
+    "lint-staged": "^16.2.7",
+    "ng-packagr": "^21.0.0",
+    "prettier": "^3.7.3",
+    "prettier-eslint": "^16.4.2",
+    "typescript": "~5.9.2"
   }
-  
 }
-

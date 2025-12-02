@@ -1,0 +1,28 @@
+<div class="c-preview-comparer">
+  <h3 class="c-preview-comparer__title">Image Preview</h3>
+  
+  @if (originalImage) {
+    <div class="c-preview-container">
+      <div class="c-preview-original">
+        <h4>Original</h4>
+        <div class="c-image-placeholder">🖼️ Original Image</div>
+      </div>
+      
+      <div class="c-preview-processed">
+        <h4>Processed</h4>
+        <div class="c-image-placeholder">✨ Processed Image</div>
+      </div>
+    </div>
+    
+    <div class="c-preview-actions">
+      <button class="c-btn c-btn--secondary" (click)="manualOverride.emit('manual')">
+        Manual Override
+      </button>
+    </div>
+  } @else {
+    <div class="c-preview-placeholder">
+      <div class="c-preview-placeholder__icon">👁️</div>
+      <p class="c-preview-placeholder__text">Select an image to preview</p>
+    </div>
+  }
+</div>

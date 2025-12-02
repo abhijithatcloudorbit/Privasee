@@ -1,0 +1,43 @@
+.c-divider {
+  background-color: var(--color-border);
+  
+  // Directions
+  &--horizontal {
+    width: 100%;
+    height: 1px;
+  }
+  
+  &--vertical {
+    width: 1px;
+    height: 100%;
+  }
+  
+  // Margins
+  &--margin-none {
+    margin: 0;
+  }
+  
+  &--margin-sm {
+    margin: 0.5rem 0;
+    
+    &.c-divider--vertical {
+      margin: 0 0.5rem;
+    }
+  }
+  
+  &--margin-md {
+    margin: 1rem 0;
+    
+    &.c-divider--vertical {
+      margin: 0 1rem;
+    }
+  }
+  
+  &--margin-lg {
+    margin: 2rem 0;
+    
+    &.c-divider--vertical {
+      margin: 0 2rem;
+    }
+  }
+}

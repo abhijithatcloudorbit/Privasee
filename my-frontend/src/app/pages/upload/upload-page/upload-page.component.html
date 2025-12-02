@@ -1,0 +1,36 @@
+<div class="upload-page">
+  <!-- Header Section -->
+  <header class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">Privacy Filter Dashboard</h1>
+      <p class="page-subtitle">
+        Upload and process media files for automatic privacy compliance.
+      </p>
+    </div>
+
+    <div class="header-actions">
+      <app-nav-tabs [items]="navItems"></app-nav-tabs>
+    </div>
+  </header>
+
+  <!-- Metrics Overview -->
+  <section class="metrics-overview">
+    <div class="metrics-grid">
+      <app-metrics-preview-card
+        *ngFor="let metric of metrics"
+        [label]="metric.label"
+        [value]="metric.value"
+        [trend]="metric.trend"
+        [trendPositive]="metric.trendPositive"
+        [description]="metric.description"
+      ></app-metrics-preview-card>
+    </div>
+  </section>
+
+  <!-- Main Upload Area -->
+  <section class="main-upload-section">
+    <app-upload-zone-organism
+      (filesSelected)="onFilesSelected($event)"
+    ></app-upload-zone-organism>
+  </section>
+</div>
