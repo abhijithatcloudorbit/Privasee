@@ -1,0 +1,20 @@
+<div class="c-form-field">
+  <div class="c-form-field__header">
+    <label *ngIf="label" class="c-form-field__label">
+      {{label}}
+      <span *ngIf="required" class="c-form-field__required">*</span>
+    </label>
+    
+    <div *ngIf="helpText && !error" class="c-form-field__help">
+      {{helpText}}
+    </div>
+  </div>
+  
+  <div class="c-form-field__control">
+    <ng-content></ng-content>
+  </div>
+  
+  <div *ngIf="error" class="c-form-field__error">
+    {{error}}
+  </div>
+</div>

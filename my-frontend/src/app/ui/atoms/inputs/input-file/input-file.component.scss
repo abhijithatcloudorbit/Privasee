@@ -1,36 +1,46 @@
-.c-file-input {
-  display: inline-block;
-  cursor: pointer;
-
-  &__native {
+.c-input-file {
+  &__label {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    cursor: pointer;
+  }
+  
+  &__input {
     display: none;
   }
-
-  &__custom {
-    display: inline-flex;
-    align-items: center;
+  
+  &__button {
     padding: 0.5rem 1rem;
-    background-color: var(--color-bg-secondary);
-    border: 1px dashed var(--color-border);
+    background-color: var(--color-gray-100);
+    border: 1px solid var(--color-border);
     border-radius: 6px;
-    transition: all 0.15s ease;
-
-    &:hover {
-      background-color: var(--color-bg-tertiary);
-      border-color: var(--color-gray-400);
-    }
-  }
-
-  &__icon {
-    width: 1rem;
-    height: 1rem;
-    margin-right: 0.5rem;
-    color: var(--color-gray-500);
-  }
-
-  &__text {
     font-size: 0.875rem;
     font-weight: 500;
     color: var(--color-gray-700);
+    transition: all 0.2s ease;
+    
+    &:hover:not(:disabled) {
+      background-color: var(--color-gray-200);
+      border-color: var(--color-border-hover);
+    }
+    
+    &:active:not(:disabled) {
+      transform: translateY(1px);
+    }
+  }
+  
+  &__name {
+    font-size: 0.875rem;
+    color: var(--color-gray-600);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  &__error {
+    margin-top: 0.5rem;
+    font-size: 0.75rem;
+    color: var(--color-error);
   }
 }

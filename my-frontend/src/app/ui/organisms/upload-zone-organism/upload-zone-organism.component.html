@@ -1,0 +1,37 @@
+<section class="c-upload-zone">
+  <div class="c-upload-zone__header">
+    <h2 class="c-upload-zone__title">Upload files</h2>
+    <p class="c-upload-zone__subtitle">
+      Drop your images here or choose them from your device.
+    </p>
+  </div>
+
+  <div class="c-upload-zone__input">
+    <app-input-file (fileSelected)="onInputFilesSelected($event)"></app-input-file>
+  </div>
+
+  <div *ngIf="files.length" class="c-upload-zone__list">
+    <h3 class="c-upload-zone__list-title">
+      Selected files ({{ files.length }})
+    </h3>
+
+    <div class="c-upload-zone__cards">
+      <app-file-upload-card
+        *ngFor="let file of files; let i = index"
+        [file]="file"
+        [index]="i"
+      ></app-file-upload-card>
+    </div>
+  </div>
+
+  <div class="c-upload-zone__actions">
+    <button
+      type="button"
+      class="c-upload-zone__primary-btn"
+      (click)="onUpload()"
+      [disabled]="!files.length || isUploading"
+    >
+      {{ isUploading ? 'Processing…' : 'Process files' }}
+    </button>
+  </div>
+</section>

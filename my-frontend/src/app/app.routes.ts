@@ -13,7 +13,7 @@ export const routes: Routes = [
       },
       {
         path: 'upload',
-        loadComponent: () => import('./pages/upload/upload-page/upload-page.component').then(m => m.UploadPageComponent)
+        loadComponent: () => import('./pages/upload/upload-page/upload-page.component').then(m => m.UploadComponent)
       },
       {
         path: 'processing',

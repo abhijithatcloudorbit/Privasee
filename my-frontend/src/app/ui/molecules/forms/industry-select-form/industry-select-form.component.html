@@ -1,0 +1,63 @@
+<div class="c-industry-select-form">
+  <div class="c-industry-select-form__header">
+    <app-text-body size="md" weight="semibold">Select Industries</app-text-body>
+    <app-text-body size="sm" color="muted">
+      {{selectedIndustries.length}} of {{industries.length}} selected
+    </app-text-body>
+  </div>
+  
+  <!-- Search -->
+  <div class="c-industry-select-form__search">
+    <app-input-text
+      placeholder="Search industries..."
+      [(ngModel)]="searchQuery"
+      class="c-industry-select-form__search-input">
+    </app-input-text>
+  </div>
+  
+  <!-- Selected Industries -->
+  <div *ngIf="selectedIndustries.length > 0" class="c-industry-select-form__selected">
+    <div class="c-industry-select-form__selected-label">Selected:</div>
+    <div class="c-industry-select-form__chips">
+      <app-chip
+        *ngFor="let industryId of selectedIndustries"
+        [removable]="true"
+        (removed)="toggleIndustry(industryId)">
+        {{getIndustry(industryId)?.icon}} {{getIndustry(industryId)?.label}}
+      </app-chip>
+    </div>
+  </div>
+  
+  <!-- Industry Grid -->
+  <div class="c-industry-select-form__grid">
+    <div
+      *ngFor="let industry of filteredIndustries"
+      class="c-industry-select-form__item"
+      [class.c-industry-select-form__item--selected]="selectedIndustries.includes(industry.id)"
+      (click)="toggleIndustry(industry.id)">
+      
+      <div class="c-industry-select-form__item-icon">
+        {{industry.icon}}
+      </div>
+      
+      <div class="c-industry-select-form__item-content">
+        <div class="c-industry-select-form__item-title">
+          {{industry.label}}
+          <app-badge *ngIf="selectedIndustries.includes(industry.id)" variant="success" size="sm">
+            Selected
+          </app-badge>
+        </div>
+        <div class="c-industry-select-form__item-description">
+          {{industry.description}}
+        </div>
+      </div>
+      
+      <div class="c-industry-select-form__item-checkbox">
+        <div class="c-checkbox">
+          <input type="checkbox" [checked]="selectedIndustries.includes(industry.id)" readonly>
+          <div class="c-checkbox__checkmark"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

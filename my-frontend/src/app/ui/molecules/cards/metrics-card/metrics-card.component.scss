@@ -1,0 +1,106 @@
+.c-metrics-card {
+  padding: 1.5rem;
+  border-radius: 8px;
+  background-color: white;
+  border: 1px solid var(--color-border);
+  transition: all 0.2s ease;
+  
+  &:hover {
+    box-shadow: var(--shadow-md);
+  }
+  
+  // Variants
+  &--primary {
+    border-color: var(--color-primary);
+    background-color: var(--color-primary-50);
+  }
+  
+  &--success {
+    border-color: var(--color-success);
+    background-color: rgba(16, 185, 129, 0.1);
+  }
+  
+  &--warning {
+    border-color: var(--color-warning);
+    background-color: rgba(245, 158, 11, 0.1);
+  }
+  
+  &--error {
+    border-color: var(--color-error);
+    background-color: rgba(239, 68, 68, 0.1);
+  }
+  
+  &--gray {
+    border-color: var(--color-border);
+    background-color: white;
+  }
+  
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+  }
+  
+  &__title-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  &__title {
+    margin: 0;
+    color: var(--color-gray-700);
+  }
+  
+  &__icon {
+    font-size: 1rem;
+  }
+  
+  &__change {
+    font-size: 0.75rem;
+    font-weight: 500;
+    
+    &--positive {
+      color: var(--color-success);
+    }
+    
+    &--negative {
+      color: var(--color-error);
+    }
+    
+    &--neutral {
+      color: var(--color-gray-500);
+    }
+  }
+  
+  &__value-container {
+    margin-bottom: 0.75rem;
+    min-height: 2rem;
+  }
+  
+  &__loading {
+    display: flex;
+    align-items: center;
+    height: 2rem;
+  }
+  
+  &__value {
+    font-size: 1.875rem;
+    font-weight: 600;
+    color: var(--color-gray-900);
+    line-height: 1;
+  }
+  
+  &__unit {
+    font-size: 0.875rem;
+    color: var(--color-gray-600);
+    font-weight: 400;
+  }
+  
+  &__description {
+    font-size: 0.75rem;
+    color: var(--color-gray-600);
+    line-height: 1.4;
+  }
+}
