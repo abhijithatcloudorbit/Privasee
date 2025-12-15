@@ -1,0 +1,22 @@
+YOLOv8n-face is the main face detector. It provides highly accurate face
+detection, handles multiple faces, rotated faces, and small faces. No
+training is needed.
+
+OpenCV DNN SSD face detector is the fallback method. It is used only if
+YOLO fails. It is faster but less accurate than YOLO. It uses a
+MobileNet-based SSD model.
+
+YOLOv8n-face = primary detector. OpenCV SSD = backup detector.
+
+Haar Cascade face detector is the final fallback method. It is 
+used only if both YOLO and SSD fail to detect a face. It is the 
+oldest and fastest detector but less accurate. It works well on small, 
+low-resolution, or simple front-facing faces. Including Haar Cascade ensures 
+that some face detection still happens even when the deep-learning detectors cannot
+run or fail to detect anything.
+
+Fallback is included to ensure face detection works even if the main
+model fails to load.
+
+Flow Used in Code:
+Try YOLOv8n-face → If not available, try DNN SSD → If not available, try Haar Cascade
