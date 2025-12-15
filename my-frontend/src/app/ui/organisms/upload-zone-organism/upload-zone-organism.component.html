@@ -1,37 +1,140 @@
 <section class="c-upload-zone">
+  
+  <!-- Header -->
   <div class="c-upload-zone__header">
-    <h2 class="c-upload-zone__title">Upload files</h2>
+    <h2 class="c-upload-zone__title">Upload Files</h2>
     <p class="c-upload-zone__subtitle">
-      Drop your images here or choose them from your device.
+      Drop your images, videos, or documents here or choose them from your device
     </p>
-  </div>
-
-  <div class="c-upload-zone__input">
-    <app-input-file (fileSelected)="onInputFilesSelected($event)"></app-input-file>
-  </div>
-
-  <div *ngIf="files.length" class="c-upload-zone__list">
-    <h3 class="c-upload-zone__list-title">
-      Selected files ({{ files.length }})
-    </h3>
-
-    <div class="c-upload-zone__cards">
-      <app-file-upload-card
-        *ngFor="let file of files; let i = index"
-        [file]="file"
-        [index]="i"
-      ></app-file-upload-card>
+    
+    <div class="c-upload-zone__file-limits">
+      <span class="c-upload-zone__limit-item">
+        <strong>Max files:</strong> {{ maxFileCount }}
+      </span>
+      <span class="c-upload-zone__limit-item">
+        <strong>Max size:</strong> {{ formatBytes(maxFileSize) }} per file
+      </span>
+      <span class="c-upload-zone__limit-item">
+        <strong>Formats:</strong> {{ acceptTypes }}
+      </span>
     </div>
   </div>
 
-  <div class="c-upload-zone__actions">
-    <button
-      type="button"
-      class="c-upload-zone__primary-btn"
-      (click)="onUpload()"
-      [disabled]="!files.length || isUploading"
-    >
-      {{ isUploading ? 'Processing…' : 'Process files' }}
-    </button>
+  <!-- Drop Zone Area -->
+  <div 
+    class="c-upload-zone__drop-area"
+    [class.c-upload-zone__drop-area--dragging]="isDragging()"
+    (dragover)="onDragOver($event)"
+    (dragleave)="onDragLeave($event)"
+    (drop)="onDrop($event)">
+    
+    <div class="c-upload-zone__drop-content">
+      <div class="c-upload-zone__drop-icon">📤</div>
+      <h3 class="c-upload-zone__drop-title">Drop files here</h3>
+      <p class="c-upload-zone__drop-subtitle">
+        or <label class="c-upload-zone__browse-link">browse
+          <input 
+            type="file"
+            [accept]="acceptTypes"
+            [multiple]="true"
+            (change)="onInputFilesSelected($any($event.target).files)"
+            style="display: none;">
+        </label> to upload
+      </p>
+      <p class="c-upload-zone__drop-hint">
+        Supports {{ acceptTypes }} • Max {{ formatBytes(maxFileSize) }} per file
+      </p>
+    </div>
   </div>
+
+  <!-- Progress Section -->
+  @if (isUploading()) {
+    <div class="c-upload-zone__progress-section">
+      <div class="c-upload-zone__progress-header">
+        <span>Uploading {{ uploadingFilesCount() }} files</span>
+        <span>{{ totalUploadProgress() }}%</span>
+      </div>
+      <app-progress-bar 
+        [value]="totalUploadProgress()" 
+        [max]="100"
+        variant="primary">
+      </app-progress-bar>
+    </div>
+  }
+
+  <!-- Files List -->
+  @if (uploadedFilesCount() > 0) {
+    <div class="c-upload-zone__list">
+      <div class="c-upload-zone__list-header">
+        <h3 class="c-upload-zone__list-title">
+          Selected files ({{ uploadedFilesCount() }}/{{ maxFileCount }})
+          <span class="c-upload-zone__list-size">• {{ formatBytes(totalFileSize()) }}</span>
+        </h3>
+        
+        <div class="c-upload-zone__list-actions">
+          <app-btn-secondary size="sm" (click)="clearAllFiles()">
+            Clear All
+          </app-btn-secondary>
+        </div>
+      </div>
+
+      <div class="c-upload-zone__cards">
+        @for (file of files(); track file.id) {
+          <div class="c-upload-zone__file-card">
+            <div class="c-upload-zone__file-info">
+              <div class="c-upload-zone__file-icon">
+                {{ getFileIcon(file.type) }}
+              </div>
+              
+              <div class="c-upload-zone__file-details">
+                <div class="c-upload-zone__file-name">{{ file.name }}</div>
+                <div class="c-upload-zone__file-meta">
+                  <span>{{ formatBytes(file.size) }}</span>
+                  <span>•</span>
+                  <span>{{ getFileTypeDisplay(file.type) }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="c-upload-zone__file-status">
+              @if (file.status === 'uploading') {
+                <div class="c-upload-zone__file-progress">
+                  <app-progress-bar 
+                    [value]="file.progress" 
+                    [max]="100"
+                    size="sm"
+                    variant="primary">
+                  </app-progress-bar>
+                  <span class="c-upload-zone__file-progress-text">{{ file.progress }}%</span>
+                </div>
+              } @else {
+                <app-badge 
+                  [variant]="getFileStatusVariant(file.status)"
+                  size="sm">
+                  {{ getStatusDisplay(file.status) }}
+                </app-badge>
+              }
+              
+              <button 
+                type="button"
+                class="c-upload-zone__file-remove"
+                (click)="removeFile(file.id)">
+                ✕
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- Actions -->
+  <div class="c-upload-zone__actions">
+    <app-btn-primary
+      (click)="onUpload()"
+      [disabled]="uploadedFilesCount() === 0 || isUploading()">
+      {{ isUploading() ? 'Processing…' : 'Process Files' }}
+    </app-btn-primary>
+  </div>
+
 </section>

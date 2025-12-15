@@ -1,0 +1,340 @@
+.c-manual-override-panel {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.c-manual-override-panel__header {
+  padding: 16px;
+  border-bottom: 1px solid #e0e0e0;
+  background: #f8f9fa;
+}
+
+.c-manual-override-panel__title {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 4px;
+  color: #333;
+}
+
+.c-manual-override-panel__subtitle {
+  font-size: 12px;
+  color: #666;
+}
+
+.c-manual-override-panel__section {
+  padding: 16px;
+  border-bottom: 1px solid #e0e0e0;
+  
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.c-manual-override-panel__section-title {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0 0 12px;
+  color: #444;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.c-manual-override-panel__tools {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.c-manual-override-panel__tool {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 8px;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: #555;
+  
+  &:hover {
+    border-color: #3498db;
+    background: rgba(52, 152, 219, 0.05);
+    color: #3498db;
+  }
+  
+  &--active {
+    border-color: #3498db;
+    background: rgba(52, 152, 219, 0.1);
+    color: #3498db;
+    font-weight: 600;
+  }
+}
+
+.c-manual-override-panel__tool-icon {
+  font-size: 18px;
+  margin-bottom: 4px;
+}
+
+.c-manual-override-panel__tool-label {
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.c-manual-override-panel__current-tool {
+  padding: 12px 16px;
+  background: rgba(52, 152, 219, 0.08);
+  border-top: 1px solid rgba(52, 152, 219, 0.2);
+  border-bottom: 1px solid rgba(52, 152, 219, 0.2);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.c-manual-override-panel__current-label {
+  font-size: 13px;
+  color: #333;
+}
+
+.c-manual-override-panel__current-value {
+  font-size: 13px;
+  font-weight: 600;
+  color: #3498db;
+  text-transform: capitalize;
+}
+
+.c-manual-override-panel__brush-preview {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
+}
+
+.c-manual-override-panel__brush-canvas {
+  width: 100px;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: repeating-conic-gradient(#f0f0f0 0% 25%, #fff 0% 50%) 50% / 20px 20px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+}
+
+.c-manual-override-panel__brush-preview-circle {
+  background: rgba(52, 152, 219, 0.6);
+  border: 2px solid #3498db;
+}
+
+.c-manual-override-panel__brush-stats {
+  flex: 1;
+  font-size: 12px;
+  color: #555;
+  
+  div {
+    margin-bottom: 4px;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+.c-manual-override-panel__brush-controls {
+  margin-bottom: 16px;
+}
+
+.c-manual-override-panel__control-group {
+  margin-bottom: 16px;
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.c-manual-override-panel__control-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #555;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.c-manual-override-panel__control-value {
+  color: #3498db;
+  font-weight: 600;
+}
+
+.c-manual-override-panel__slider {
+  width: 100%;
+  height: 6px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background: #e9ecef;
+  border-radius: 3px;
+  outline: none;
+  
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #3498db;
+    cursor: pointer;
+    border: 2px solid #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  }
+  
+  &::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #3498db;
+    cursor: pointer;
+    border: 2px solid #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  }
+}
+
+.c-manual-override-panel__reset-btn {
+  width: 100%;
+  padding: 8px;
+  background: #f8f9fa;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  color: #666;
+  font-size: 12px;
+  cursor: pointer;
+  
+  &:hover {
+    background: #e9ecef;
+  }
+}
+
+.c-manual-override-panel__quick-filters {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.c-manual-override-panel__quick-filter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px 8px;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: #555;
+  
+  &:hover {
+    border-color: #9b59b6;
+    background: rgba(155, 89, 182, 0.05);
+    color: #9b59b6;
+  }
+  
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+.c-manual-override-panel__quick-filter-icon {
+  font-size: 20px;
+  margin-bottom: 6px;
+}
+
+.c-manual-override-panel__quick-filter-label {
+  font-size: 11px;
+  font-weight: 500;
+  text-align: center;
+}
+
+.c-manual-override-panel__history-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.c-manual-override-panel__history-btn {
+  flex: 1;
+  padding: 10px;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  color: #555;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+  
+  &:hover:not(:disabled) {
+    background: #f8f9fa;
+  }
+  
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  &--danger {
+    color: #e74c3c;
+    border-color: rgba(231, 76, 60, 0.3);
+    
+    &:hover:not(:disabled) {
+      background: rgba(231, 76, 60, 0.05);
+    }
+  }
+}
+
+.c-manual-override-panel__tips {
+  padding: 16px;
+  background: #f8f9fa;
+  border-top: 1px solid #e0e0e0;
+}
+
+.c-manual-override-panel__tips-list {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 12px;
+  color: #555;
+  
+  li {
+    margin-bottom: 6px;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+  
+  strong {
+    color: #333;
+    font-weight: 600;
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .c-manual-override-panel {
+    &__tools {
+      grid-template-columns: repeat(5, 1fr);
+    }
+    
+    &__quick-filters {
+      grid-template-columns: 1fr;
+    }
+  }
+}

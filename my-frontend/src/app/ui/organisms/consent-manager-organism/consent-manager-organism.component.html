@@ -1,0 +1,834 @@
+<!-- consent-manager-organism.component.html -->
+<div class="c-consent-manager">
+  <!-- Header -->
+  <div class="c-consent-manager__header">
+    <div class="c-consent-manager__header-content">
+      <h2 class="c-consent-manager__title">
+        📋 Consent Manager
+      </h2>
+      <p class="c-consent-manager__subtitle">
+        Manage user consents and preferences in compliance with global regulations
+      </p>
+    </div>
+    
+    <!-- Stats -->
+    <div class="c-consent-manager__stats">
+      <div class="c-consent-manager__stat">
+        <div class="c-consent-manager__stat-value">
+          {{ dashboardStats().totalForms }}
+        </div>
+        <div class="c-consent-manager__stat-label">
+          Consent Forms
+        </div>
+      </div>
+      
+      <div class="c-consent-manager__stat">
+        <div class="c-consent-manager__stat-value" style="color: #3498db">
+          {{ dashboardStats().totalConsents }}
+        </div>
+        <div class="c-consent-manager__stat-label">
+          Total Consents
+        </div>
+      </div>
+      
+      <div class="c-consent-manager__stat">
+        <div class="c-consent-manager__stat-value" style="color: #2ecc71">
+          {{ dashboardStats().activeForms }}
+        </div>
+        <div class="c-consent-manager__stat-label">
+          Active Forms
+        </div>
+      </div>
+      
+      <div class="c-consent-manager__stat">
+        <div class="c-consent-manager__stat-value" [style.color]="getComplianceScoreColor(dashboardStats().complianceScore)">
+          {{ dashboardStats().complianceScore }}%
+        </div>
+        <div class="c-consent-manager__stat-label">
+          Compliance Score
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <div class="c-consent-manager__nav">
+    <div class="c-consent-manager__nav-buttons">
+      <button 
+        class="c-consent-manager__nav-btn"
+        [class.c-consent-manager__nav-btn--active]="activeView() === 'dashboard'"
+        (click)="setActiveView('dashboard')">
+        📊 Dashboard
+      </button>
+      <button 
+        class="c-consent-manager__nav-btn"
+        [class.c-consent-manager__nav-btn--active]="activeView() === 'forms'"
+        (click)="setActiveView('forms')">
+        📋 Forms
+      </button>
+      <button 
+        class="c-consent-manager__nav-btn"
+        [class.c-consent-manager__nav-btn--active]="activeView() === 'users'"
+        (click)="setActiveView('users')">
+        👥 Users
+      </button>
+      <button 
+        class="c-consent-manager__nav-btn"
+        [class.c-consent-manager__nav-btn--active]="activeView() === 'records'"
+        (click)="setActiveView('records')">
+        📝 Records
+      </button>
+      <button 
+        class="c-consent-manager__nav-btn"
+        [class.c-consent-manager__nav-btn--active]="activeView() === 'analytics'"
+        (click)="setActiveView('analytics')">
+        📈 Analytics
+      </button>
+    </div>
+    
+    <!-- Actions -->
+    <div class="c-consent-manager__actions">
+      <button 
+        class="c-consent-manager__action-btn"
+        (click)="createNewForm()"
+        title="Create New Consent Form">
+        ➕ New Form
+      </button>
+      
+      <button 
+        class="c-consent-manager__action-btn"
+        (click)="runComplianceCheck()"
+        [disabled]="isLoading()">
+        {{ isLoading() ? '🔍 Checking...' : '⚖️ Check Compliance' }}
+      </button>
+      
+      <button 
+        class="c-consent-manager__action-btn"
+        (click)="generateTestConsent()">
+        🧪 Test Consent
+      </button>
+      
+      <div class="c-consent-manager__export">
+        <select 
+          class="c-consent-manager__export-select"
+          (change)="exportConsentData($any($event.target).value)">
+          <option value="">Export Data</option>
+          <option value="json">Export as JSON</option>
+          <option value="csv">Export as CSV</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="c-consent-manager__content">
+    @if (activeView() === 'dashboard') {
+      <!-- Dashboard View -->
+      <div class="c-consent-manager__dashboard">
+        <!-- Compliance Overview -->
+        <div class="c-consent-manager__compliance-overview">
+          <h3 class="c-consent-manager__section-title">
+            📋 Compliance Overview
+          </h3>
+          
+          <div class="c-consent-manager__compliance-grid">
+            <div class="c-consent-manager__compliance-card">
+              <div class="c-consent-manager__compliance-header">
+                <div class="c-consent-manager__compliance-title">
+                  Regulation Coverage
+                </div>
+                <div class="c-consent-manager__compliance-score" 
+                     [style.color]="getComplianceScoreColor(dashboardStats().complianceScore)">
+                  {{ dashboardStats().complianceScore }}%
+                </div>
+              </div>
+              
+              <div class="c-consent-manager__regulation-list">
+                @for (regulation of ['GDPR', 'HIPAA', 'DPDP', 'CCPA', 'LGPD']; track regulation) {
+                  <div class="c-consent-manager__regulation-item">
+                    <div class="c-consent-manager__regulation-icon">
+                      {{ getRegulationIcon(regulation) }}
+                    </div>
+                    <div class="c-consent-manager__regulation-name" [style.color]="getRegulationColor(regulation)">
+                      {{ regulation }}
+                    </div>
+                    <div class="c-consent-manager__regulation-count">
+                      <!-- FIXED: Use getRegulationCount method -->
+                      {{ getRegulationCount(regulation) }} forms
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+            
+            <!-- Consent Categories -->
+            <div class="c-consent-manager__compliance-card">
+              <div class="c-consent-manager__compliance-header">
+                <div class="c-consent-manager__compliance-title">
+                  Consent Categories
+                </div>
+                <div class="c-consent-manager__compliance-count">
+                  <!-- FIXED: Calculate category count in component -->
+                  {{ getCategoryCount() }}
+                </div>
+              </div>
+              
+              <div class="c-consent-manager__categories-list">
+                @for (category of ['marketing', 'analytics', 'necessary', 'personalization', 'data_sharing']; track category) {
+                  @if (dashboardStats().byCategory[category]) {
+                    <div class="c-consent-manager__category-item">
+                      <div class="c-consent-manager__category-icon" [style.color]="getCategoryColor(category)">
+                        {{ getCategoryIcon(category) }}
+                      </div>
+                      <div class="c-consent-manager__category-name">
+                        {{ category | titlecase }}
+                      </div>
+                      <div class="c-consent-manager__category-count">
+                        {{ dashboardStats().byCategory[category] }} consents
+                      </div>
+                    </div>
+                  }
+                }
+              </div>
+            </div>
+            
+            <!-- Recent Activity -->
+            <div class="c-consent-manager__compliance-card">
+              <div class="c-consent-manager__compliance-header">
+                <div class="c-consent-manager__compliance-title">
+                  Recent Consent Activity
+                </div>
+                <div class="c-consent-manager__compliance-count">
+                  {{ dashboardStats().todayConsents }} today
+                </div>
+              </div>
+              
+              <div class="c-consent-manager__activity-list">
+                @for (record of filteredRecords().slice(0, 5); track record.id) {
+                  <div class="c-consent-manager__activity-item">
+                    <div class="c-consent-manager__activity-icon" [style.color]="getActionColor(record.action)">
+                      {{ getActionIcon(record.action) }}
+                    </div>
+                    <div class="c-consent-manager__activity-content">
+                      <div class="c-consent-manager__activity-user">
+                        {{ record.userEmail }}
+                      </div>
+                      <div class="c-consent-manager__activity-action">
+                        {{ record.action | titlecase }} consent
+                      </div>
+                    </div>
+                    <div class="c-consent-manager__activity-time">
+                      {{ formatDate(record.timestamp) }}
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="c-consent-manager__quick-actions">
+          <h3 class="c-consent-manager__section-title">
+            ⚡ Quick Actions
+          </h3>
+          
+          <div class="c-consent-manager__action-grid">
+            <button class="c-consent-manager__quick-action" (click)="createNewForm()">
+              <div class="c-consent-manager__quick-icon">📝</div>
+              <div class="c-consent-manager__quick-title">Create Form</div>
+              <div class="c-consent-manager__quick-desc">Design new consent form</div>
+            </button>
+            
+            <button class="c-consent-manager__quick-action" (click)="runComplianceCheck()">
+              <div class="c-consent-manager__quick-icon">🔍</div>
+              <div class="c-consent-manager__quick-title">Check Compliance</div>
+              <div class="c-consent-manager__quick-desc">Audit all forms</div>
+            </button>
+            
+            <button class="c-consent-manager__quick-action" (click)="setActiveView('users')">
+              <div class="c-consent-manager__quick-icon">👥</div>
+              <div class="c-consent-manager__quick-title">Manage Users</div>
+              <div class="c-consent-manager__quick-desc">View user consents</div>
+            </button>
+            
+            <button class="c-consent-manager__quick-action" (click)="exportConsentData('json')">
+              <div class="c-consent-manager__quick-icon">📥</div>
+              <div class="c-consent-manager__quick-title">Export Data</div>
+              <div class="c-consent-manager__quick-desc">JSON or CSV format</div>
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+    
+    @if (activeView() === 'forms') {
+      <!-- Forms View -->
+      <div class="c-consent-manager__forms">
+        <div class="c-consent-manager__forms-header">
+          <h3 class="c-consent-manager__section-title">
+            📋 Consent Forms ({{ filteredForms().length }})
+          </h3>
+          
+          <!-- Filters -->
+          <div class="c-consent-manager__filters">
+            <div class="c-consent-manager__filter-group">
+              <select 
+                class="c-consent-manager__filter-select"
+                [value]="filter().regulation"
+                (change)="setRegulationFilter($any($event.target).value)">
+                <option value="all">All Regulations</option>
+                @for (regulation of ['GDPR', 'HIPAA', 'DPDP', 'CCPA', 'LGPD', 'Multiple']; track regulation) {
+                  <option [value]="regulation">{{ regulation }}</option>
+                }
+              </select>
+            </div>
+            
+            <div class="c-consent-manager__filter-group">
+              <select 
+                class="c-consent-manager__filter-select"
+                [value]="filter().status"
+                (change)="setStatusFilter($any($event.target).value)">
+                <option value="all">All Status</option>
+                <option value="active">Active</option>
+                <option value="draft">Draft</option>
+                <option value="archived">Archived</option>
+              </select>
+            </div>
+            
+            <div class="c-consent-manager__filter-group">
+              <input 
+                type="text"
+                class="c-consent-manager__search-input"
+                placeholder="Search forms..."
+                [value]="filter().searchQuery"
+                (input)="setSearchQuery($any($event.target).value)">
+            </div>
+            
+            <button 
+              class="c-consent-manager__filter-reset"
+              (click)="resetFilters()">
+              🔄 Reset
+            </button>
+          </div>
+        </div>
+        
+        <!-- Forms Grid -->
+        <div class="c-consent-manager__forms-grid">
+          @for (form of filteredForms(); track form.id) {
+            <div class="c-consent-manager__form-card"
+                 [class.c-consent-manager__form-card--active]="form.status === 'active'"
+                 [class.c-consent-manager__form-card--draft]="form.status === 'draft'">
+              
+              <div class="c-consent-manager__form-header">
+                <div class="c-consent-manager__form-regulation" [style.color]="getRegulationColor(form.regulation)">
+                  {{ getRegulationIcon(form.regulation) }} {{ form.regulation }}
+                </div>
+                <div class="c-consent-manager__form-status" [style.color]="getStatusColor(form.status)">
+                  {{ form.status | titlecase }}
+                </div>
+              </div>
+              
+              <div class="c-consent-manager__form-content">
+                <h4 class="c-consent-manager__form-title">
+                  {{ form.title }}
+                </h4>
+                <p class="c-consent-manager__form-desc">
+                  {{ form.description }}
+                </p>
+                
+                <div class="c-consent-manager__form-meta">
+                  <div class="c-consent-manager__form-version">
+                    v{{ form.version }}
+                  </div>
+                  <div class="c-consent-manager__form-date">
+                    Effective: {{ formatDate(form.effectiveDate) }}
+                  </div>
+                </div>
+                
+                <div class="c-consent-manager__form-stats">
+                  <div class="c-consent-manager__form-stat">
+                    <div class="c-consent-manager__stat-label">Sections:</div>
+                    <div class="c-consent-manager__stat-value">{{ form.sections.length }}</div>
+                  </div>
+                  <div class="c-consent-manager__form-stat">
+                    <div class="c-consent-manager__stat-label">Languages:</div>
+                    <div class="c-consent-manager__stat-value">{{ form.languages.length }}</div>
+                  </div>
+                  <div class="c-consent-manager__form-stat">
+                    <div class="c-consent-manager__stat-label">Required:</div>
+                    <div class="c-consent-manager__stat-value">{{ form.required ? 'Yes' : 'No' }}</div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="c-consent-manager__form-actions">
+                <button 
+                  class="c-consent-manager__form-action"
+                  (click)="selectForm(form.id); formMode.set('preview')">
+                  👁️ Preview
+                </button>
+                <button 
+                  class="c-consent-manager__form-action"
+                  (click)="selectForm(form.id); formMode.set('edit')">
+                  ✏️ Edit
+                </button>
+                <button 
+                  class="c-consent-manager__form-action"
+                  (click)="duplicateForm(form.id)">
+                  📋 Duplicate
+                </button>
+                @if (form.status === 'active') {
+                  <button 
+                    class="c-consent-manager__form-action"
+                    (click)="archiveForm(form.id)">
+                    📦 Archive
+                  </button>
+                } @else {
+                  <button 
+                    class="c-consent-manager__form-action"
+                    (click)="activateForm(form.id)">
+                    ✅ Activate
+                  </button>
+                }
+              </div>
+            </div>
+          }
+          
+          @if (filteredForms().length === 0) {
+            <div class="c-consent-manager__empty-state">
+              <div class="c-consent-manager__empty-icon">
+                📋
+              </div>
+              <h4 class="c-consent-manager__empty-title">
+                No Consent Forms Found
+              </h4>
+              <p class="c-consent-manager__empty-desc">
+                Try adjusting your filters or create a new form.
+              </p>
+              <button 
+                class="c-consent-manager__empty-action"
+                (click)="createNewForm()">
+                ➕ Create New Form
+              </button>
+            </div>
+          }
+        </div>
+      </div>
+    }
+    
+    @if (activeView() === 'users') {
+      <!-- Users View -->
+      <div class="c-consent-manager__users">
+        <div class="c-consent-manager__users-header">
+          <h3 class="c-consent-manager__section-title">
+            👥 User Consent Profiles ({{ userProfiles().length }})
+          </h3>
+          
+          <div class="c-consent-manager__users-search">
+            <input 
+              type="text"
+              class="c-consent-manager__search-input"
+              placeholder="Search users..."
+              [value]="filter().searchQuery"
+              (input)="setSearchQuery($any($event.target).value)">
+          </div>
+        </div>
+        
+        <!-- Users List -->
+        <div class="c-consent-manager__users-list">
+          @for (user of userProfiles(); track user.userId) {
+            <div class="c-consent-manager__user-card"
+                 [class.c-consent-manager__user-card--selected]="selectedUserId() === user.userId"
+                 (click)="selectUser(user.userId)">
+              
+              <div class="c-consent-manager__user-header">
+                <div class="c-consent-manager__user-avatar">
+                  {{ user.firstName?.charAt(0) || user.email.charAt(0) }}
+                </div>
+                <div class="c-consent-manager__user-info">
+                  <div class="c-consent-manager__user-name">
+                    {{ user.firstName }} {{ user.lastName }}
+                  </div>
+                  <div class="c-consent-manager__user-email">
+                    {{ user.email }}
+                  </div>
+                </div>
+                <div class="c-consent-manager__user-jurisdiction">
+                  {{ user.metadata.jurisdiction }}
+                </div>
+              </div>
+              
+              <div class="c-consent-manager__user-stats">
+                <div class="c-consent-manager__user-stat">
+                  <div class="c-consent-manager__stat-value" style="color: #2ecc71">
+                    {{ user.activeConsents }}
+                  </div>
+                  <div class="c-consent-manager__stat-label">
+                    Active Consents
+                  </div>
+                </div>
+                <div class="c-consent-manager__user-stat">
+                  <div class="c-consent-manager__stat-value" style="color: #e74c3c">
+                    {{ user.revokedConsents }}
+                  </div>
+                  <div class="c-consent-manager__stat-label">
+                    Revoked
+                  </div>
+                </div>
+                <div class="c-consent-manager__user-stat">
+                  <div class="c-consent-manager__stat-value">
+                    {{ user.preferences.length }}
+                  </div>
+                  <div class="c-consent-manager__stat-label">
+                    Forms
+                  </div>
+                </div>
+              </div>
+              
+              <div class="c-consent-manager__user-actions">
+                <div class="c-consent-manager__user-date">
+                  Last consent: {{ formatDate(user.lastConsentDate) }}
+                </div>
+                <button 
+                  class="c-consent-manager__user-action"
+                  (click)="selectUser(user.userId); $event.stopPropagation()">
+                  👁️ View Details
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+        
+        <!-- User Details Panel -->
+        @if (selectedUserDetails()) {
+          <div class="c-consent-manager__user-details">
+            <div class="c-consent-manager__details-header">
+              <h4 class="c-consent-manager__details-title">
+                User Consent Details
+              </h4>
+              <button 
+                class="c-consent-manager__details-close"
+                (click)="clearSelection()">
+                ✕
+              </button>
+            </div>
+            
+            <div class="c-consent-manager__details-content">
+              <!-- User Info -->
+              <div class="c-consent-manager__user-section">
+                <h5 class="c-consent-manager__section-subtitle">User Information</h5>
+                <div class="c-consent-manager__info-grid">
+                  <div class="c-consent-manager__info-item">
+                    <div class="c-consent-manager__info-label">User ID:</div>
+                    <div class="c-consent-manager__info-value">{{ selectedUserDetails()!.userId }}</div>
+                  </div>
+                  <div class="c-consent-manager__info-item">
+                    <div class="c-consent-manager__info-label">Email:</div>
+                    <div class="c-consent-manager__info-value">{{ selectedUserDetails()!.email }}</div>
+                  </div>
+                  <div class="c-consent-manager__info-item">
+                    <div class="c-consent-manager__info-label">Name:</div>
+                    <div class="c-consent-manager__info-value">{{ selectedUserDetails()!.firstName }} {{ selectedUserDetails()!.lastName }}</div>
+                  </div>
+                  <div class="c-consent-manager__info-item">
+                    <div class="c-consent-manager__info-label">Jurisdiction:</div>
+                    <div class="c-consent-manager__info-value">{{ selectedUserDetails()!.metadata.jurisdiction }}</div>
+                  </div>
+                  <div class="c-consent-manager__info-item">
+                    <div class="c-consent-manager__info-label">Category:</div>
+                    <div class="c-consent-manager__info-value">{{ selectedUserDetails()!.metadata.dataSubjectCategory | titlecase }}</div>
+                  </div>
+                  <div class="c-consent-manager__info-item">
+                    <div class="c-consent-manager__info-label">Age Verified:</div>
+                    <div class="c-consent-manager__info-value">{{ selectedUserDetails()!.metadata.ageVerified ? 'Yes' : 'No' }}</div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Current Consents -->
+              <div class="c-consent-manager__user-section">
+                <h5 class="c-consent-manager__section-subtitle">Current Consents</h5>
+                <div class="c-consent-manager__consents-list">
+                  @for (preference of selectedUserDetails()!.preferences; track preference.formId) {
+                    <div class="c-consent-manager__consent-item"
+                         [class.c-consent-manager__consent-item--granted]="preference.granted">
+                      <div class="c-consent-manager__consent-header">
+                        <div class="c-consent-manager__consent-title">
+                          {{ preference.formTitle }}
+                        </div>
+                        <div class="c-consent-manager__consent-status" [style.color]="preference.granted ? '#2ecc71' : '#e74c3c'">
+                          {{ preference.granted ? '✅ Granted' : '❌ Not Granted' }}
+                        </div>
+                      </div>
+                      <div class="c-consent-manager__consent-date">
+                        Last updated: {{ formatDate(preference.lastUpdated) }}
+                      </div>
+                      
+                      <div class="c-consent-manager__consent-actions">
+                        @if (preference.granted) {
+                          <button 
+                            class="c-consent-manager__consent-action"
+                            (click)="simulateConsentRevocation(selectedUserDetails()!.userId, preference.formId)">
+                            ↩️ Revoke Consent
+                          </button>
+                        } @else {
+                          <button 
+                            class="c-consent-manager__consent-action"
+                            (click)="simulateConsentGrant(selectedUserDetails()!.userId, preference.formId, [])">
+                            ✅ Grant Consent
+                          </button>
+                        }
+                      </div>
+                    </div>
+                  }
+                </div>
+              </div>
+              
+              <!-- Consent History -->
+              <div class="c-consent-manager__user-section">
+                <h5 class="c-consent-manager__section-subtitle">Consent History</h5>
+                <div class="c-consent-manager__history-list">
+                  @for (record of userConsentRecords(); track record.id) {
+                    <div class="c-consent-manager__history-item">
+                      <div class="c-consent-manager__history-icon" [style.color]="getActionColor(record.action)">
+                        {{ getActionIcon(record.action) }}
+                      </div>
+                      <div class="c-consent-manager__history-content">
+                        <div class="c-consent-manager__history-action">
+                          Consent {{ record.action | titlecase }}
+                        </div>
+                        <div class="c-consent-manager__history-details">
+                          Form: {{ record.formId }} • Method: {{ record.consentMethod }}
+                        </div>
+                      </div>
+                      <div class="c-consent-manager__history-time">
+                        {{ formatDate(record.timestamp) }}
+                      </div>
+                    </div>
+                  }
+                </div>
+              </div>
+              
+              <!-- Forms Needing Consent -->
+              @if (formsNeedingConsent().length > 0) {
+                <div class="c-consent-manager__user-section">
+                  <h5 class="c-consent-manager__section-subtitle">Forms Needing Consent</h5>
+                  <div class="c-consent-manager__needing-consent">
+                    @for (form of formsNeedingConsent(); track form.id) {
+                      <div class="c-consent-manager__needing-item">
+                        <div class="c-consent-manager__needing-title">
+                          {{ form.title }}
+                        </div>
+                        <div class="c-consent-manager__needing-regulation" [style.color]="getRegulationColor(form.regulation)">
+                          {{ form.regulation }}
+                        </div>
+                        <button 
+                          class="c-consent-manager__needing-action"
+                          (click)="simulateConsentGrant(selectedUserDetails()!.userId, form.id, [])">
+                          Request Consent
+                        </button>
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    }
+    
+    @if (activeView() === 'records') {
+      <!-- Records View -->
+      <div class="c-consent-manager__records">
+        <div class="c-consent-manager__records-header">
+          <h3 class="c-consent-manager__section-title">
+            📝 Consent Records ({{ filteredRecords().length }})
+          </h3>
+          
+          <div class="c-consent-manager__records-filters">
+            <input 
+              type="text"
+              class="c-consent-manager__search-input"
+              placeholder="Search records..."
+              [value]="filter().searchQuery"
+              (input)="setSearchQuery($any($event.target).value)">
+          </div>
+        </div>
+        
+        <!-- Records Table -->
+        <div class="c-consent-manager__records-table">
+          <table class="c-consent-manager__table">
+            <thead>
+              <tr>
+                <th>Timestamp</th>
+                <th>User</th>
+                <th>Form</th>
+                <th>Action</th>
+                <th>Method</th>
+                <th>Details</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (record of filteredRecords(); track record.id) {
+                <tr [class.c-consent-manager__table-row--selected]="selectedRecordId() === record.id"
+                    (click)="selectRecord(record.id)">
+                  <td>
+                    <div class="c-consent-manager__table-time">
+                      {{ formatDate(record.timestamp) }}
+                    </div>
+                  </td>
+                  <td>
+                    <div class="c-consent-manager__table-user">
+                      {{ record.userEmail }}
+                    </div>
+                  </td>
+                  <td>
+                    <div class="c-consent-manager__table-form">
+                      {{ record.formId }} (v{{ record.formVersion }})
+                    </div>
+                  </td>
+                  <td>
+                    <div class="c-consent-manager__table-action" [style.color]="getActionColor(record.action)">
+                      {{ getActionIcon(record.action) }} {{ record.action | titlecase }}
+                    </div>
+                  </td>
+                  <td>
+                    <div class="c-consent-manager__table-method">
+                      {{ record.consentMethod }}
+                    </div>
+                  </td>
+                  <td>
+                    <button 
+                      class="c-consent-manager__table-details"
+                      (click)="selectRecord(record.id); $event.stopPropagation()">
+                      View Details
+                    </button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    }
+    
+    @if (activeView() === 'analytics') {
+      <!-- Analytics View -->
+      <div class="c-consent-manager__analytics">
+        <div class="c-consent-manager__analytics-header">
+          <h3 class="c-consent-manager__section-title">
+            📈 Consent Analytics
+          </h3>
+        </div>
+        
+        <div class="c-consent-manager__analytics-grid">
+          <!-- Statistics Cards -->
+          <div class="c-consent-manager__analytics-card">
+            <div class="c-consent-manager__analytics-title">
+              📊 Consent Distribution
+            </div>
+            <div class="c-consent-manager__analytics-stats">
+              @for (category of ['marketing', 'analytics', 'necessary', 'personalization']; track category) {
+                <div class="c-consent-manager__analytics-stat">
+                  <div class="c-consent-manager__stat-label">
+                    <span class="c-consent-manager__stat-icon" [style.color]="getCategoryColor(category)">
+                      {{ getCategoryIcon(category) }}
+                    </span>
+                    {{ category | titlecase }}
+                  </div>
+                  <div class="c-consent-manager__stat-value">
+                    {{ dashboardStats().byCategory[category] || 0 }}
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+          
+          <!-- Regulation Coverage -->
+          <div class="c-consent-manager__analytics-card">
+            <div class="c-consent-manager__analytics-title">
+              🌍 Regulation Coverage
+            </div>
+            <div class="c-consent-manager__regulation-coverage">
+              @for (regulation of ['GDPR', 'HIPAA', 'DPDP', 'CCPA', 'LGPD']; track regulation) {
+                <div class="c-consent-manager__coverage-item">
+                  <div class="c-consent-manager__coverage-regulation" [style.color]="getRegulationColor(regulation)">
+                    {{ getRegulationIcon(regulation) }} {{ regulation }}
+                  </div>
+                  <div class="c-consent-manager__coverage-bar">
+                    <!-- FIXED: Use getRegulationCoveragePercent method -->
+                    <div class="c-consent-manager__coverage-fill"
+                         [style.width]="getRegulationCoveragePercent(regulation)"
+                         [style.background-color]="getRegulationColor(regulation)">
+                    </div>
+                  </div>
+                  <div class="c-consent-manager__coverage-count">
+                    <!-- FIXED: Use getRegulationCount method -->
+                    {{ getRegulationCount(regulation) }}
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+          
+          <!-- Recent Activity Timeline -->
+          <div class="c-consent-manager__analytics-card">
+            <div class="c-consent-manager__analytics-title">
+              📅 Recent Activity Timeline
+            </div>
+            <div class="c-consent-manager__activity-timeline">
+              @for (record of filteredRecords().slice(0, 8); track record.id) {
+                <div class="c-consent-manager__timeline-item">
+                  <div class="c-consent-manager__timeline-time">
+                    {{ formatDate(record.timestamp) }}
+                  </div>
+                  <div class="c-consent-manager__timeline-content">
+                    <div class="c-consent-manager__timeline-action" [style.color]="getActionColor(record.action)">
+                      {{ getActionIcon(record.action) }} {{ record.userEmail }}
+                    </div>
+                    <div class="c-consent-manager__timeline-details">
+                      {{ record.action | titlecase }} consent for {{ record.formId }}
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Footer -->
+  <div class="c-consent-manager__footer">
+    <div class="c-consent-manager__footer-info">
+      <div class="c-consent-manager__footer-stat">
+        <span class="c-consent-manager__footer-label">Active Forms:</span>
+        <span class="c-consent-manager__footer-value">{{ dashboardStats().activeForms }}</span>
+      </div>
+      <div class="c-consent-manager__footer-stat">
+        <span class="c-consent-manager__footer-label">Total Consents:</span>
+        <span class="c-consent-manager__footer-value">{{ dashboardStats().totalConsents }}</span>
+      </div>
+      <div class="c-consent-manager__footer-stat">
+        <span class="c-consent-manager__footer-label">Today's Consents:</span>
+        <span class="c-consent-manager__footer-value" style="color: #3498db">{{ dashboardStats().todayConsents }}</span>
+      </div>
+      <div class="c-consent-manager__footer-stat">
+        <span class="c-consent-manager__footer-label">Compliance Score:</span>
+        <span class="c-consent-manager__footer-value" [style.color]="getComplianceScoreColor(dashboardStats().complianceScore)">
+          {{ dashboardStats().complianceScore }}%
+        </span>
+      </div>
+    </div>
+    
+    <div class="c-consent-manager__footer-note">
+      Consent Manager • Last updated: {{ formatDate(currentDate) }} • 
+      <button class="c-consent-manager__footer-refresh" (click)="generateTestConsent()">
+        🧪 Generate Test Data
+      </button>
+    </div>
+  </div>
+</div>

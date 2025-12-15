@@ -1,0 +1,76 @@
+<div class="c-image-canvas">
+  <!-- Canvas Element -->
+  <canvas #canvas
+          class="c-image-canvas__canvas"
+          (wheel)="onZoom($event)"
+          (mousedown)="onMouseDown($event)"
+          (mousemove)="onMouseMove($event)"
+          (mouseup)="onMouseUp($event)"
+          (mouseleave)="onMouseUp($event)">
+  </canvas>
+
+  <!-- Overlay SVG for detections -->
+  @if (canvasState.image()) {
+    <svg class="c-image-canvas__overlay">
+      <!-- Detection Rectangles -->
+      @for (detection of canvasState.detections(); track detection.id) {
+        <rect
+          [attr.x]="detection.bbox.x * scale() + offset().x"
+          [attr.y]="detection.bbox.y * scale() + offset().y"
+          [attr.width]="detection.bbox.width * scale()"
+          [attr.height]="detection.bbox.height * scale()"
+          [class]="getDetectionClass(detection)"
+          (click)="canvasState.toggleDetectionSelection(detection.id); $event.stopPropagation()">
+        </rect>
+        
+        <!-- Detection Labels -->
+        <text
+          [attr.x]="detection.bbox.x * scale() + offset().x"
+          [attr.y]="(detection.bbox.y * scale() + offset().y) - 5"
+          class="c-image-canvas__detection-label">
+          {{ getDetectionLabel(detection) }}
+        </text>
+      }
+    </svg>
+
+    <!-- Canvas Controls -->
+    <div class="c-image-canvas__controls">
+      <button 
+        class="c-image-canvas__control-button"
+        (click)="centerImage()"
+        [disabled]="!hasImage()">
+        Center
+      </button>
+      <button 
+        class="c-image-canvas__control-button"
+        (click)="zoomIn()"
+        [disabled]="!hasImage()">
+        Zoom In
+      </button>
+      <button 
+        class="c-image-canvas__control-button"
+        (click)="zoomOut()"
+        [disabled]="!hasImage()">
+        Zoom Out
+      </button>
+    </div>
+
+    <!-- Canvas Stats -->
+    <div class="c-image-canvas__stats">
+      <span class="c-image-canvas__stat">
+        {{ canvasState.detections().length }} detections
+      </span>
+      <span class="c-image-canvas__stat">
+        {{ canvasState.selectedDetectionIds().length }} selected
+      </span>
+    </div>
+  } @else {
+    <div class="c-image-canvas__empty">
+      <div class="c-image-canvas__empty-icon">🖼️</div>
+      <h3 class="c-image-canvas__empty-title">No Image Loaded</h3>
+      <p class="c-image-canvas__empty-message">
+        Select an image from the batch panel to view and edit
+      </p>
+    </div>
+  }
+</div>

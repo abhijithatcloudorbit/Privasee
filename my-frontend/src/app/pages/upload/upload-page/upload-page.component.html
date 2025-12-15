@@ -1,36 +1,64 @@
-<div class="upload-page">
-  <!-- Header Section -->
-  <header class="page-header">
-    <div class="header-content">
-      <h1 class="page-title">Privacy Filter Dashboard</h1>
-      <p class="page-subtitle">
-        Upload and process media files for automatic privacy compliance.
-      </p>
-    </div>
-
-    <div class="header-actions">
-      <app-nav-tabs [items]="navItems"></app-nav-tabs>
-    </div>
+<!-- Upload Page -->
+<div class="c-upload-page">
+  
+  <!-- Page Header -->
+  <header class="c-upload-page__header">
+    <h1 class="c-upload-page__title">Upload Files</h1>
+    <p class="c-upload-page__subtitle">Upload images, videos, or documents for privacy filtering</p>
   </header>
 
-  <!-- Metrics Overview -->
-  <section class="metrics-overview">
-    <div class="metrics-grid">
-      <app-metrics-preview-card
-        *ngFor="let metric of metrics"
-        [label]="metric.label"
-        [value]="metric.value"
-        [trend]="metric.trend"
-        [trendPositive]="metric.trendPositive"
-        [description]="metric.description"
-      ></app-metrics-preview-card>
-    </div>
-  </section>
+  <!-- Navigation Tabs -->
+  <div class="c-upload-page__tabs">
+    <app-nav-tabs 
+      [items]="navItems()" 
+      [initialValue]="activeTab()"
+      (tabChange)="onTabChange($event)">
+    </app-nav-tabs>
+  </div>
 
-  <!-- Main Upload Area -->
-  <section class="main-upload-section">
+  <!-- Metrics Section -->
+  <div class="c-upload-page__metrics">
+    <div class="c-upload-page__metrics-grid">
+      @for (metric of getMetricsArray(); track metric.label) {
+        <app-metrics-preview-card
+          [label]="metric.label"
+          [value]="metric.value"
+          [trend]="metric.trend"
+          [trendPositive]="metric.trendPositive"
+          [description]="metric.description">
+        </app-metrics-preview-card>
+      }
+    </div>
+  </div>
+
+  <!-- Upload Zone -->
+  <div class="c-upload-page__upload-zone">
     <app-upload-zone-organism
-      (filesSelected)="onFilesSelected($event)"
-    ></app-upload-zone-organism>
-  </section>
+      [acceptTypes]="getAcceptTypes()"
+      [maxFileSize]="getMaxFileSize()"
+      [maxFileCount]="getMaxFileCount()"
+      (filesSelected)="onFilesSelected($event)">
+    </app-upload-zone-organism>
+  </div>
+
+  <!-- Instructions -->
+  <div class="c-upload-page__instructions">
+    <h3 class="c-upload-page__instructions-title">How to upload files:</h3>
+    <ol class="c-upload-page__instructions-list">
+      <li>Select the appropriate tab for your file type (Images, Videos, or Documents)</li>
+      <li>Drag and drop files into the upload zone or click to browse</li>
+      <li>Files will automatically be added to the processing queue</li>
+      <li>Review and start processing when ready</li>
+    </ol>
+    
+    <div class="c-upload-page__file-limits">
+      <h4>File Limits:</h4>
+      <ul>
+        <li><strong>Images:</strong> Max 50 files, 10MB each (JPEG, PNG, GIF, WebP, etc.)</li>
+        <li><strong>Videos:</strong> Max 10 files, 100MB each (MP4, MOV, AVI, etc.)</li>
+        <li><strong>Documents:</strong> Max 20 files, 5MB each (PDF, DOC, TXT, etc.)</li>
+      </ul>
+    </div>
+  </div>
+
 </div>

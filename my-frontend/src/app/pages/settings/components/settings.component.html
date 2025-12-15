@@ -1,0 +1,178 @@
+<!-- Settings Dashboard -->
+<div class="c-settings">
+  
+  <!-- Header -->
+  <header class="c-settings__header">
+    <h1 class="c-settings__title">Settings</h1>
+    <p class="c-settings__subtitle">Configure your AI Privacy Filter preferences</p>
+    
+    <!-- Actions -->
+    <div class="c-settings__actions">
+      <app-btn-secondary (click)="resetToDefaults()">Reset to Defaults</app-btn-secondary>
+      <app-btn-primary (click)="saveSettings()">Save Settings</app-btn-primary>
+    </div>
+  </header>
+
+  <!-- Settings Categories -->
+  <div class="c-settings__categories">
+    <div class="c-settings__category">
+      <h2 class="c-settings__category-title">AI Detection</h2>
+      <p class="c-settings__category-description">Configure AI model behavior and accuracy</p>
+      
+      <div class="c-settings__category-content">
+        @for (setting of aiSettings(); track setting.id) {
+          <div class="c-settings__item">
+            <div class="c-settings__item-info">
+              <label class="c-settings__item-label">{{ setting.label }}</label>
+              <p class="c-settings__item-description">{{ setting.description }}</p>
+            </div>
+            
+            <div class="c-settings__item-control">
+              @switch (setting.type) {
+                @case ('toggle') {
+                  <label class="c-settings__toggle">
+                    <input 
+                      type="checkbox"
+                      [checked]="setting.value"
+                      (change)="handleToggleChange(setting.id, $event)">
+                    <span class="c-settings__toggle-slider"></span>
+                  </label>
+                }
+                @case ('number') {
+                  <input 
+                    type="range"
+                    class="c-settings__slider"
+                    [min]="setting.min"
+                    [max]="setting.max"
+                    [step]="setting.step"
+                    [value]="setting.value"
+                    (input)="handleNumberChange(setting.id, $event)">
+                  <span class="c-settings__slider-value">{{ setting.value }}</span>
+                }
+                @case ('select') {
+                  <select 
+                    class="c-settings__select"
+                    [value]="setting.value"
+                    (change)="handleSelectChange(setting.id, $event)">
+                    @for (option of setting.options; track option.value) {
+                      <option [value]="option.value">{{ option.label }}</option>
+                    }
+                  </select>
+                }
+              }
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="c-settings__category">
+      <h2 class="c-settings__category-title">Privacy Filters</h2>
+      <p class="c-settings__category-description">Configure automatic detection and filtering</p>
+      
+      <div class="c-settings__category-content">
+        @for (setting of privacySettings(); track setting.id) {
+          <div class="c-settings__item">
+            <div class="c-settings__item-info">
+              <label class="c-settings__item-label">{{ setting.label }}</label>
+              <p class="c-settings__item-description">{{ setting.description }}</p>
+            </div>
+            
+            <div class="c-settings__item-control">
+              @switch (setting.type) {
+                @case ('toggle') {
+                  <label class="c-settings__toggle">
+                    <input 
+                      type="checkbox"
+                      [checked]="setting.value"
+                      (change)="handleToggleChange(setting.id, $event)">
+                    <span class="c-settings__toggle-slider"></span>
+                  </label>
+                }
+                @case ('select') {
+                  <select 
+                    class="c-settings__select"
+                    [value]="setting.value"
+                    (change)="handleSelectChange(setting.id, $event)">
+                    @for (option of setting.options; track option.value) {
+                      <option [value]="option.value">{{ option.label }}</option>
+                    }
+                  </select>
+                }
+              }
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="c-settings__category">
+      <h2 class="c-settings__category-title">Performance</h2>
+      <p class="c-settings__category-description">Configure processing and system performance</p>
+      
+      <div class="c-settings__category-content">
+        @for (setting of performanceSettings(); track setting.id) {
+          <div class="c-settings__item">
+            <div class="c-settings__item-info">
+              <label class="c-settings__item-label">{{ setting.label }}</label>
+              <p class="c-settings__item-description">{{ setting.description }}</p>
+            </div>
+            
+            <div class="c-settings__item-control">
+              @if (setting.type === 'number') {
+                <input 
+                  type="number"
+                  class="c-settings__number"
+                  [min]="setting.min"
+                  [max]="setting.max"
+                  [step]="setting.step"
+                  [value]="setting.value"
+                  (change)="handleNumberChange(setting.id, $event)">
+              }
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="c-settings__category">
+      <h2 class="c-settings__category-title">Export</h2>
+      <p class="c-settings__category-description">Configure output format and options</p>
+      
+      <div class="c-settings__category-content">
+        @for (setting of exportSettings(); track setting.id) {
+          <div class="c-settings__item">
+            <div class="c-settings__item-info">
+              <label class="c-settings__item-label">{{ setting.label }}</label>
+              <p class="c-settings__item-description">{{ setting.description }}</p>
+            </div>
+            
+            <div class="c-settings__item-control">
+              @switch (setting.type) {
+                @case ('toggle') {
+                  <label class="c-settings__toggle">
+                    <input 
+                      type="checkbox"
+                      [checked]="setting.value"
+                      (change)="handleToggleChange(setting.id, $event)">
+                    <span class="c-settings__toggle-slider"></span>
+                  </label>
+                }
+                @case ('select') {
+                  <select 
+                    class="c-settings__select"
+                    [value]="setting.value"
+                    (change)="handleSelectChange(setting.id, $event)">
+                    @for (option of setting.options; track option.value) {
+                      <option [value]="option.value">{{ option.label }}</option>
+                    }
+                  </select>
+                }
+              }
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>

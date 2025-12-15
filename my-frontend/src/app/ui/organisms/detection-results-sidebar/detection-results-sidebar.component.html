@@ -1,0 +1,192 @@
+<div class="c-detection-sidebar">
+  <!-- Header -->
+  <div class="c-detection-sidebar__header">
+    <h3 class="c-detection-sidebar__title">
+      Detection Results
+      <span class="c-detection-sidebar__count">
+        {{ totalDetections() }}
+      </span>
+    </h3>
+    
+    <div class="c-detection-sidebar__stats">
+      @for (type of detectionTypeKeys; track type) {
+        @if (detectionStats()[type] > 0) {
+          <span class="c-detection-sidebar__stat" 
+                [style.background-color]="getTypeColor(type)"
+                [style.border-color]="getTypeColor(type)">
+            {{ detectionStats()[type] }} {{ toTitleCase(type) }}
+          </span>
+        }
+      }
+    </div>
+  </div>
+
+  <!-- Selection Controls -->
+  <div class="c-detection-sidebar__selection-controls">
+    <div class="c-detection-sidebar__selection-info">
+      <span class="c-detection-sidebar__selection-count">
+        {{ selectedCount() }} selected
+      </span>
+      @if (hasSelected()) {
+        <div class="c-detection-sidebar__selection-actions">
+          <button class="c-detection-sidebar__action-btn" (click)="selectNone()">
+            Clear
+          </button>
+          <button class="c-detection-sidebar__action-btn" (click)="selectAll()">
+            Select All
+          </button>
+        </div>
+      }
+    </div>
+
+    <!-- Bulk Actions -->
+    @if (hasSelected()) {
+      <div class="c-detection-sidebar__bulk-actions">
+        <span class="c-detection-sidebar__bulk-label">Apply to selected:</span>
+        <div class="c-detection-sidebar__filter-buttons">
+          <button class="c-detection-sidebar__filter-btn" (click)="applyBulkFilter('blur')">
+            Blur
+          </button>
+          <button class="c-detection-sidebar__filter-btn" (click)="applyBulkFilter('pixelate')">
+            Pixelate
+          </button>
+          <button class="c-detection-sidebar__filter-btn" (click)="applyBulkFilter('redact')">
+            Redact
+          </button>
+          <button class="c-detection-sidebar__filter-btn" (click)="clearBulkFilters()">
+            Clear Filters
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Filters -->
+  <div class="c-detection-sidebar__filters">
+    <div class="c-detection-sidebar__filter-group">
+      <label class="c-detection-sidebar__filter-label">Filter by type:</label>
+      <select 
+        class="c-detection-sidebar__filter-select"
+        [value]="filterType()"
+        (change)="filterType.set($any($event.target).value)">
+        <option value="all">All Types</option>
+        <option value="face">Faces</option>
+        <option value="text">Text</option>
+        <option value="license_plate">License Plates</option>
+        <option value="person">People</option>
+        <option value="vehicle">Vehicles</option>
+        <option value="signature">Signatures</option>
+      </select>
+    </div>
+
+    <div class="c-detection-sidebar__filter-group">
+      <label class="c-detection-sidebar__filter-label">Sort by:</label>
+      <select 
+        class="c-detection-sidebar__filter-select"
+        [value]="sortBy()"
+        (change)="sortBy.set($any($event.target).value)">
+        <option value="confidence">Confidence (High to Low)</option>
+        <option value="type">Type</option>
+        <option value="size">Size (Large to Small)</option>
+      </select>
+    </div>
+
+    <div class="c-detection-sidebar__filter-options">
+      <label class="c-detection-sidebar__checkbox">
+        <input 
+          type="checkbox" 
+          [checked]="showOnlySelected()"
+          (change)="showOnlySelected.set($any($event.target).checked)">
+        Show only selected
+      </label>
+      
+      <label class="c-detection-sidebar__checkbox">
+        <input 
+          type="checkbox" 
+          [checked]="showConfidenceScores()"
+          (change)="showConfidenceScores.set($any($event.target).checked)">
+        Show confidence
+      </label>
+    </div>
+  </div>
+
+  <!-- Detections List -->
+  <div class="c-detection-sidebar__list-container">
+    @if (sortedDetections().length === 0) {
+      <div class="c-detection-sidebar__empty">
+        <div class="c-detection-sidebar__empty-icon">🔍</div>
+        <p>No detections found</p>
+        <p class="c-detection-sidebar__empty-hint">
+          Try adjusting your filters or run AI detection on an image.
+        </p>
+      </div>
+    } @else {
+      <div class="c-detection-sidebar__list">
+        @for (detection of sortedDetections(); track detection.id) {
+          <div 
+            class="c-detection-sidebar__item"
+            [class.c-detection-sidebar__item--selected]="canvasState.selectedDetectionIds().includes(detection.id)"
+            [class.c-detection-sidebar__item--filtered]="detection.appliedFilter && detection.appliedFilter !== 'none'">
+            
+            <!-- Checkbox -->
+            <div class="c-detection-sidebar__item-checkbox">
+              <input 
+                type="checkbox"
+                [checked]="canvasState.selectedDetectionIds().includes(detection.id)"
+                (change)="toggleDetection(detection.id)">
+            </div>
+
+            <!-- Icon -->
+            <div 
+              class="c-detection-sidebar__item-icon"
+              [style.background-color]="getTypeColor(detection.type)">
+              {{ getTypeIcon(detection.type) }}
+            </div>
+
+            <!-- Info -->
+            <div class="c-detection-sidebar__item-info">
+              <div class="c-detection-sidebar__item-header">
+                <span class="c-detection-sidebar__item-type">
+                  {{ toTitleCase(detection.type) }}
+                </span>
+                @if (showConfidenceScores()) {
+                  <span class="c-detection-sidebar__item-confidence">
+                    {{ (detection.confidence * 100) | number:'1.0-0' }}%
+                  </span>
+                }
+              </div>
+              
+              <div class="c-detection-sidebar__item-details">
+                <span class="c-detection-sidebar__item-dimensions">
+                  {{ detection.bbox.width }}×{{ detection.bbox.height }}px
+                </span>
+                @if (detection.appliedFilter && detection.appliedFilter !== 'none') {
+                  <span class="c-detection-sidebar__item-filter-tag">
+                    {{ toTitleCase(detection.appliedFilter) }}
+                  </span>
+                }
+              </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="c-detection-sidebar__item-actions">
+              <button 
+                class="c-detection-sidebar__item-action"
+                (click)="navigateToDetection(detection); $event.stopPropagation()"
+                title="View in canvas">
+                👁️
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+  <!-- Footer Actions -->
+  <div class="c-detection-sidebar__footer">
+    <button class="c-detection-sidebar__export-btn" (click)="exportDetections()">
+      📥 Export Detections (JSON)
+    </button>
+  </div>
+</div>

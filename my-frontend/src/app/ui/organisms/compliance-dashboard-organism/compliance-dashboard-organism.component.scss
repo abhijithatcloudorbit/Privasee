@@ -1,0 +1,387 @@
+.c-compliance-dashboard {
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e0e0e0;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.c-compliance-dashboard__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.c-compliance-dashboard__header-content {
+  flex: 1;
+}
+
+.c-compliance-dashboard__title {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0 0 8px;
+  color: white;
+}
+
+.c-compliance-dashboard__subtitle {
+  font-size: 14px;
+  opacity: 0.9;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.c-compliance-dashboard__score {
+  text-align: center;
+  padding: 16px 24px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.c-compliance-dashboard__score-value {
+  font-size: 42px;
+  font-weight: 800;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.c-compliance-dashboard__score-label {
+  font-size: 12px;
+  opacity: 0.9;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.c-compliance-dashboard__summary {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  padding: 24px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.c-compliance-dashboard__stat {
+  text-align: center;
+  padding: 16px;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  transition: transform 0.2s;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.c-compliance-dashboard__stat-value {
+  font-size: 32px;
+  font-weight: 700;
+  color: #3498db;
+  margin-bottom: 8px;
+}
+
+.c-compliance-dashboard__stat-label {
+  font-size: 12px;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.c-compliance-dashboard__filters {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  padding: 24px;
+  background: white;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.c-compliance-dashboard__filter-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.c-compliance-dashboard__filter-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.c-compliance-dashboard__filter-select {
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #333;
+  background: white;
+  cursor: pointer;
+  transition: border-color 0.2s;
+  
+  &:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+  }
+}
+
+.c-compliance-dashboard__standards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  padding: 24px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.c-compliance-dashboard__standard-card {
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  border: 2px solid;
+  border-top-width: 4px;
+  transition: transform 0.2s;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.c-compliance-dashboard__standard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.c-compliance-dashboard__standard-icon {
+  padding: 6px 12px;
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.c-compliance-dashboard__standard-count {
+  font-size: 12px;
+  color: #666;
+}
+
+.c-compliance-dashboard__standard-desc {
+  font-size: 13px;
+  color: #666;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.c-compliance-dashboard__requirements {
+  padding: 24px;
+  background: white;
+}
+
+.c-compliance-dashboard__requirements-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 20px;
+  color: #333;
+}
+
+.c-compliance-dashboard__empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: #999;
+}
+
+.c-compliance-dashboard__empty-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.c-compliance-dashboard__requirements-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.c-compliance-dashboard__requirement {
+  padding: 20px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background: white;
+  transition: all 0.2s;
+  
+  &:hover {
+    border-color: #3498db;
+    box-shadow: 0 4px 8px rgba(52, 152, 219, 0.1);
+  }
+  
+  &--noncompliant {
+    border-left: 4px solid #e74c3c;
+    background: linear-gradient(to right, rgba(231, 76, 60, 0.03), white);
+  }
+}
+
+.c-compliance-dashboard__requirement-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.c-compliance-dashboard__requirement-meta {
+  display: flex;
+  gap: 8px;
+}
+
+.c-compliance-dashboard__requirement-standard,
+.c-compliance-dashboard__requirement-severity {
+  padding: 4px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: white;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.c-compliance-dashboard__requirement-status {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.c-compliance-dashboard__requirement-content {
+  margin-bottom: 16px;
+}
+
+.c-compliance-dashboard__requirement-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 8px;
+  color: #333;
+}
+
+.c-compliance-dashboard__requirement-desc {
+  font-size: 14px;
+  color: #666;
+  margin: 0 0 12px;
+  line-height: 1.5;
+}
+
+.c-compliance-dashboard__requirement-actions {
+  font-size: 13px;
+  color: #555;
+  
+  ul {
+    margin: 8px 0 0;
+    padding-left: 20px;
+    
+    li {
+      margin-bottom: 4px;
+      line-height: 1.4;
+      
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+}
+
+.c-compliance-dashboard__requirement-footer {
+  padding-top: 12px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.c-compliance-dashboard__requirement-dates {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #888;
+}
+
+.c-compliance-dashboard__footer {
+  padding: 20px 24px;
+  background: #f8f9fa;
+  border-top: 1px solid #e9ecef;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.c-compliance-dashboard__export-btn {
+  padding: 12px 24px;
+  background: #3498db;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  
+  &:hover {
+    background: #2980b9;
+    transform: translateY(-1px);
+  }
+}
+
+.c-compliance-dashboard__footer-note {
+  font-size: 12px;
+  color: #888;
+}
+
+// Responsive design
+@media (max-width: 1024px) {
+  .c-compliance-dashboard {
+    &__summary,
+    &__standards {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    
+    &__filters {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .c-compliance-dashboard {
+    &__header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 20px;
+    }
+    
+    &__summary,
+    &__standards {
+      grid-template-columns: 1fr;
+    }
+    
+    &__requirement-dates {
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    &__footer {
+      flex-direction: column;
+      gap: 16px;
+      align-items: stretch;
+    }
+  }
+}

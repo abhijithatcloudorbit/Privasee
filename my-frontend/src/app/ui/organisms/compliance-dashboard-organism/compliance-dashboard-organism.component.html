@@ -1,0 +1,238 @@
+<div class="c-compliance-dashboard">
+  <!-- Header -->
+  <div class="c-compliance-dashboard__header">
+    <div class="c-compliance-dashboard__header-content">
+      <h2 class="c-compliance-dashboard__title">
+        Compliance Dashboard
+      </h2>
+      <p class="c-compliance-dashboard__subtitle">
+        Monitor GDPR, HIPAA, and DPDP compliance requirements
+      </p>
+    </div>
+    
+    <!-- Overall Score -->
+    <div class="c-compliance-dashboard__score">
+      <div class="c-compliance-dashboard__score-value">
+        {{ complianceStats().complianceScore }}%
+      </div>
+      <div class="c-compliance-dashboard__score-label">
+        Compliance Score
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary Stats -->
+  <div class="c-compliance-dashboard__summary">
+    <div class="c-compliance-dashboard__stat">
+      <div class="c-compliance-dashboard__stat-value">
+        {{ complianceStats().total }}
+      </div>
+      <div class="c-compliance-dashboard__stat-label">
+        Total Requirements
+      </div>
+    </div>
+    
+    <div class="c-compliance-dashboard__stat">
+      <div class="c-compliance-dashboard__stat-value" style="color: #2ecc71">
+        {{ complianceStats().byStatus.compliant }}
+      </div>
+      <div class="c-compliance-dashboard__stat-label">
+        Compliant
+      </div>
+    </div>
+    
+    <div class="c-compliance-dashboard__stat">
+      <div class="c-compliance-dashboard__stat-value" style="color: #f39c12">
+        {{ complianceStats().byStatus.partial }}
+      </div>
+      <div class="c-compliance-dashboard__stat-label">
+        Partial
+      </div>
+    </div>
+    
+    <div class="c-compliance-dashboard__stat">
+      <div class="c-compliance-dashboard__stat-value" style="color: #e74c3c">
+        {{ complianceStats().byStatus.nonCompliant }}
+      </div>
+      <div class="c-compliance-dashboard__stat-label">
+        Non-Compliant
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="c-compliance-dashboard__filters">
+    <div class="c-compliance-dashboard__filter-group">
+      <label class="c-compliance-dashboard__filter-label">Filter by Standard:</label>
+      <select 
+        class="c-compliance-dashboard__filter-select"
+        [value]="filterStandard()"
+        (change)="filterStandard.set($any($event.target).value)">
+        <option value="all">All Standards</option>
+        <option value="GDPR">GDPR</option>
+        <option value="HIPAA">HIPAA</option>
+        <option value="DPDP">DPDP</option>
+      </select>
+    </div>
+    
+    <div class="c-compliance-dashboard__filter-group">
+      <label class="c-compliance-dashboard__filter-label">Filter by Status:</label>
+      <select 
+        class="c-compliance-dashboard__filter-select"
+        [value]="filterStatus()"
+        (change)="filterStatus.set($any($event.target).value)">
+        <option value="all">All Statuses</option>
+        <option value="compliant">Compliant</option>
+        <option value="partial">Partial</option>
+        <option value="non-compliant">Non-Compliant</option>
+        <option value="not-applicable">Not Applicable</option>
+      </select>
+    </div>
+    
+    <div class="c-compliance-dashboard__filter-group">
+      <label class="c-compliance-dashboard__filter-label">Filter by Severity:</label>
+      <select 
+        class="c-compliance-dashboard__filter-select"
+        [value]="filterSeverity()"
+        (change)="filterSeverity.set($any($event.target).value)">
+        <option value="all">All Severities</option>
+        <option value="high">High</option>
+        <option value="medium">Medium</option>
+        <option value="low">Low</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Standards Breakdown -->
+  <div class="c-compliance-dashboard__standards">
+    <div class="c-compliance-dashboard__standard-card" 
+         [style.border-color]="getStandardColor('GDPR')">
+      <div class="c-compliance-dashboard__standard-header">
+        <div class="c-compliance-dashboard__standard-icon" 
+             [style.background-color]="getStandardColor('GDPR')">
+          GDPR
+        </div>
+        <div class="c-compliance-dashboard__standard-count">
+          {{ complianceStats().byStandard.GDPR }} requirements
+        </div>
+      </div>
+      <p class="c-compliance-dashboard__standard-desc">
+        General Data Protection Regulation (EU)
+      </p>
+    </div>
+    
+    <div class="c-compliance-dashboard__standard-card" 
+         [style.border-color]="getStandardColor('HIPAA')">
+      <div class="c-compliance-dashboard__standard-header">
+        <div class="c-compliance-dashboard__standard-icon" 
+             [style.background-color]="getStandardColor('HIPAA')">
+          HIPAA
+        </div>
+        <div class="c-compliance-dashboard__standard-count">
+          {{ complianceStats().byStandard.HIPAA }} requirements
+        </div>
+      </div>
+      <p class="c-compliance-dashboard__standard-desc">
+        Health Insurance Portability and Accountability Act (US)
+      </p>
+    </div>
+    
+    <div class="c-compliance-dashboard__standard-card" 
+         [style.border-color]="getStandardColor('DPDP')">
+      <div class="c-compliance-dashboard__standard-header">
+        <div class="c-compliance-dashboard__standard-icon" 
+             [style.background-color]="getStandardColor('DPDP')">
+          DPDP
+        </div>
+        <div class="c-compliance-dashboard__standard-count">
+          {{ complianceStats().byStandard.DPDP }} requirements
+        </div>
+      </div>
+      <p class="c-compliance-dashboard__standard-desc">
+        Digital Personal Data Protection Act (India)
+      </p>
+    </div>
+  </div>
+
+  <!-- Requirements List -->
+  <div class="c-compliance-dashboard__requirements">
+    <h3 class="c-compliance-dashboard__requirements-title">
+      Compliance Requirements ({{ filteredRequirements().length }})
+    </h3>
+    
+    @if (filteredRequirements().length === 0) {
+      <div class="c-compliance-dashboard__empty">
+        <div class="c-compliance-dashboard__empty-icon">📋</div>
+        <p>No requirements match your filters</p>
+      </div>
+    } @else {
+      <div class="c-compliance-dashboard__requirements-list">
+        @for (req of filteredRequirements(); track req.id) {
+          <div class="c-compliance-dashboard__requirement"
+               [class.c-compliance-dashboard__requirement--noncompliant]="req.status === 'non-compliant'">
+            
+            <!-- Requirement Header -->
+            <div class="c-compliance-dashboard__requirement-header">
+              <div class="c-compliance-dashboard__requirement-meta">
+                <span class="c-compliance-dashboard__requirement-standard"
+                      [style.background-color]="getStandardColor(req.standard)">
+                  {{ req.standard }}
+                </span>
+                <span class="c-compliance-dashboard__requirement-severity"
+                      [style.background-color]="getSeverityColor(req.severity)">
+                  {{ toTitleCase(req.severity) }}
+                </span>
+              </div>
+              
+              <div class="c-compliance-dashboard__requirement-status"
+                   [style.color]="getStatusColor(req.status)">
+                {{ toTitleCase(req.status) }}
+              </div>
+            </div>
+            
+            <!-- Requirement Content -->
+            <div class="c-compliance-dashboard__requirement-content">
+              <h4 class="c-compliance-dashboard__requirement-title">
+                {{ req.requirement }}
+              </h4>
+              <p class="c-compliance-dashboard__requirement-desc">
+                {{ req.description }}
+              </p>
+              
+              <!-- Actions -->
+              @if (req.actions.length > 0) {
+                <div class="c-compliance-dashboard__requirement-actions">
+                  <strong>Actions:</strong>
+                  <ul>
+                    @for (action of req.actions; track action) {
+                      <li>{{ action }}</li>
+                    }
+                  </ul>
+                </div>
+              }
+            </div>
+            
+            <!-- Requirement Footer -->
+            <div class="c-compliance-dashboard__requirement-footer">
+              <div class="c-compliance-dashboard__requirement-dates">
+                <span>Last checked: {{ formatDate(req.lastChecked) }}</span>
+                <span>Next check: {{ formatDate(req.nextCheck) }} 
+                  (in {{ daysUntilNextCheck(req.nextCheck) }} days)</span>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+  <!-- Footer Actions -->
+  <div class="c-compliance-dashboard__footer">
+    <button class="c-compliance-dashboard__export-btn" (click)="exportComplianceReport()">
+      📊 Export Compliance Report
+    </button>
+    <div class="c-compliance-dashboard__footer-note">
+      Last updated: {{ formatDate(currentDate) }}
+    </div>
+  </div>
+</div>
