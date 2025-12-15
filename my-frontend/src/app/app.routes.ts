@@ -17,11 +17,11 @@ export const routes: Routes = [
       },
       {
         path: 'processing',
-        loadComponent: () => import('./pages/processing/processing-page/processing-page.component').then(m => m.ProcessingPageComponent)
+        loadComponent: () => import('./pages/processing/processing.component').then(m => m.ProcessingComponent)
       },
       {
         path: 'compliance',
-        loadComponent: () => import('./pages/compliance/compliance-page/compliance-page.component').then(m => m.CompliancePageComponent)
+        loadComponent: () => import('./pages/compliance/components/compliance.component').then(m => m.ComplianceComponent)
       },
       {
         path: 'analytics',
@@ -29,7 +29,7 @@ export const routes: Routes = [
       },
       {
         path: 'settings',
-        loadComponent: () => import('./pages/settings/settings-page/settings-page.component').then(m => m.SettingsPageComponent)
+        loadComponent: () => import('./pages/settings/components/settings.component').then(m => m.SettingsComponent)
       }
     ]
   },

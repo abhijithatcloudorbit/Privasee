@@ -1,0 +1,313 @@
+<!-- sidebar-context-organism.component.html -->
+<div class="c-sidebar-context">
+  <!-- Context Header -->
+  <div class="c-sidebar-context__header">
+    <div class="c-sidebar-context__header-main">
+      <div class="c-sidebar-context__icon">
+        {{ getContextIcon(currentContext()?.toolType || 'selection') }}
+      </div>
+      <div class="c-sidebar-context__title-group">
+        <h3 class="c-sidebar-context__title">
+          {{ currentContext()?.title || 'Tools' }}
+        </h3>
+        <p class="c-sidebar-context__subtitle">
+          {{ currentContext()?.description || 'Tool settings and options' }}
+        </p>
+      </div>
+    </div>
+    
+    @if (imageStats()) {
+      <div class="c-sidebar-context__image-stats">
+        <div class="c-sidebar-context__stat">
+          <span class="c-sidebar-context__stat-label">Size:</span>
+          <span class="c-sidebar-context__stat-value">{{ imageStats()?.dimensions }}</span>
+        </div>
+        <div class="c-sidebar-context__stat">
+          <span class="c-sidebar-context__stat-label">Risk:</span>
+          <span class="c-sidebar-context__stat-value" [style.color]="getRiskColor(imageStats()?.privacyRisk || 'low')">
+            {{ imageStats()?.privacyRisk || 'low' | titlecase }}
+          </span>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Context Tabs -->
+  <div class="c-sidebar-context__tabs">
+    @for (context of sidebarContexts(); track context.id) {
+      <button 
+        class="c-sidebar-context__tab"
+        [class.c-sidebar-context__tab--active]="context.isActive"
+        (click)="switchContext(context.id)"
+        [title]="context.description">
+        <span class="c-sidebar-context__tab-icon">{{ context.icon }}</span>
+        <span class="c-sidebar-context__tab-label">{{ context.title.split(' ')[0] }}</span>
+      </button>
+    }
+  </div>
+
+  <!-- Context Content -->
+  <div class="c-sidebar-context__content">
+    <!-- Brush Context -->
+    @if (activeContextId() === 'brush_tools') {
+      <div class="c-sidebar-context__section">
+        <h4 class="c-sidebar-context__section-title">🖌️ Brush Settings</h4>
+        
+        <div class="c-sidebar-context__control-group">
+          <label class="c-sidebar-context__control-label">Size: {{ brushSettings().size }}px</label>
+          <input type="range" 
+                 class="c-sidebar-context__slider"
+                 [value]="brushSettings().size"
+                 (input)="updateBrushSetting('size', $any($event.target).value)"
+                 min="1" max="200" step="1">
+        </div>
+        
+        <div class="c-sidebar-context__control-group">
+          <label class="c-sidebar-context__control-label">Opacity: {{ brushSettings().opacity }}%</label>
+          <input type="range" 
+                 class="c-sidebar-context__slider"
+                 [value]="brushSettings().opacity"
+                 (input)="updateBrushSetting('opacity', $any($event.target).value)"
+                 min="0" max="100" step="1">
+        </div>
+        
+        <div class="c-sidebar-context__control-group">
+          <label class="c-sidebar-context__control-label">Hardness: {{ brushSettings().hardness }}%</label>
+          <input type="range" 
+                 class="c-sidebar-context__slider"
+                 [value]="brushSettings().hardness"
+                 (input)="updateBrushSetting('hardness', $any($event.target).value)"
+                 min="0" max="100" step="1">
+        </div>
+        
+        <div class="c-sidebar-context__control-group">
+          <label class="c-sidebar-context__control-label">Flow: {{ brushSettings().flow }}%</label>
+          <input type="range" 
+                 class="c-sidebar-context__slider"
+                 [value]="brushSettings().flow"
+                 (input)="updateBrushSetting('flow', $any($event.target).value)"
+                 min="0" max="100" step="1">
+        </div>
+        
+        <div class="c-sidebar-context__control-group">
+          <label class="c-sidebar-context__control-label">
+            <input type="checkbox"
+                   [checked]="brushSettings().pressureSensitivity"
+                   (change)="updateBrushSetting('pressureSensitivity', $any($event.target).checked)">
+            Pressure Sensitivity
+          </label>
+        </div>
+      </div>
+    }
+
+    <!-- Selection Context -->
+    @if (activeContextId() === 'selection_tools') {
+      <div class="c-sidebar-context__section">
+        <h4 class="c-sidebar-context__section-title">🔲 Selection Mode</h4>
+        
+        <div class="c-sidebar-context__button-group">
+          @for (mode of ['rectangle', 'ellipse', 'lasso', 'polygon', 'magic_wand']; track mode) {
+            <button 
+              class="c-sidebar-context__mode-btn"
+              [class.c-sidebar-context__mode-btn--active]="selectionSettings().mode === mode"
+              (click)="updateSelectionSetting('mode', mode)">
+              {{ getSelectionModeIcon(mode) }} {{ mode | titlecase }}
+            </button>
+          }
+        </div>
+        
+        <div class="c-sidebar-context__control-group">
+          <label class="c-sidebar-context__control-label">Feather: {{ selectionSettings().feather }}px</label>
+          <input type="range" 
+                 class="c-sidebar-context__slider"
+                 [value]="selectionSettings().feather"
+                 (input)="updateSelectionSetting('feather', $any($event.target).value)"
+                 min="0" max="50" step="1">
+        </div>
+        
+        <div class="c-sidebar-context__control-group">
+          <label class="c-sidebar-context__control-label">
+            <input type="checkbox"
+                   [checked]="selectionSettings().antiAlias"
+                   (change)="updateSelectionSetting('antiAlias', $any($event.target).checked)">
+            Anti-Aliasing
+          </label>
+        </div>
+      </div>
+    }
+
+    <!-- Object Detection Context -->
+    @if (activeContextId() === 'object_tools') {
+      <div class="c-sidebar-context__section">
+        <h4 class="c-sidebar-context__section-title">🎯 Detection Settings</h4>
+        
+        <div class="c-sidebar-context__control-group">
+          <label class="c-sidebar-context__control-label">
+            Confidence: {{ detectionSettings().confidenceThreshold | number:'1.2-2' }}
+          </label>
+          <input type="range" 
+                 class="c-sidebar-context__slider"
+                 [value]="detectionSettings().confidenceThreshold"
+                 (input)="updateConfidenceThreshold($any($event.target).value)"
+                 min="0.1" max="1" step="0.05">
+        </div>
+        
+        <div class="c-sidebar-context__control-group">
+          <label class="c-sidebar-context__control-label">Detection Types</label>
+          <div class="c-sidebar-context__checkbox-group">
+            @for (type of ['face', 'text', 'license_plate', 'personal_document']; track type) {
+              <label class="c-sidebar-context__checkbox-label">
+                <input type="checkbox"
+                       [checked]="detectionSettings().detectionTypes.includes(type)"
+                       (change)="toggleDetectionType(type)">
+                {{ type | titlecase }}
+              </label>
+            }
+          </div>
+        </div>
+        
+        <div class="c-sidebar-context__control-group">
+          <label class="c-sidebar-context__control-label">
+            <input type="checkbox"
+                   [checked]="detectionSettings().autoApply"
+                   (change)="updateAutoApply($any($event.target).checked)">
+            Auto-apply detections
+          </label>
+        </div>
+        
+        <div class="c-sidebar-context__control-group">
+          <label class="c-sidebar-context__control-label">
+            <input type="checkbox"
+                   [checked]="detectionSettings().showBoundingBoxes"
+                   (change)="updateShowBoundingBoxes($any($event.target).checked)">
+            Show bounding boxes
+          </label>
+        </div>
+      </div>
+    }
+
+    <!-- Compliance Context -->
+    @if (activeContextId() === 'compliance_tools') {
+      <div class="c-sidebar-context__section">
+        <h4 class="c-sidebar-context__section-title">⚖️ Compliance Status</h4>
+        
+        @if (complianceStatus()) {
+          <div class="c-sidebar-context__compliance-grid">
+            @if (complianceStatus()?.gdpr) {
+              <div class="c-sidebar-context__compliance-item">
+                <div class="c-sidebar-context__compliance-label">🇪🇺 GDPR</div>
+                <div class="c-sidebar-context__compliance-status" 
+                     [style.color]="getComplianceColor(complianceStatus()!.gdpr!.compliant)">
+                  {{ complianceStatus()!.gdpr!.compliant ? '✅ Compliant' : '⚠️ Issues' }}
+                </div>
+              </div>
+            }
+            
+            @if (complianceStatus()?.hipaa) {
+              <div class="c-sidebar-context__compliance-item">
+                <div class="c-sidebar-context__compliance-label">🏥 HIPAA</div>
+                <div class="c-sidebar-context__compliance-status" 
+                     [style.color]="getComplianceColor(complianceStatus()!.hipaa!.compliant)">
+                  {{ complianceStatus()!.hipaa!.compliant ? '✅ Compliant' : '⚠️ Issues' }}
+                </div>
+              </div>
+            }
+            
+            @if (complianceStatus()?.dpdp) {
+              <div class="c-sidebar-context__compliance-item">
+                <div class="c-sidebar-context__compliance-label">🇮🇳 DPDP</div>
+                <div class="c-sidebar-context__compliance-status" 
+                     [style.color]="getComplianceColor(complianceStatus()!.dpdp!.compliant)">
+                  {{ complianceStatus()!.dpdp!.compliant ? '✅ Compliant' : '⚠️ Issues' }}
+                </div>
+              </div>
+            }
+            
+            @if (complianceStatus()?.ccpa) {
+              <div class="c-sidebar-context__compliance-item">
+                <div class="c-sidebar-context__compliance-label">🇺🇸 CCPA</div>
+                <div class="c-sidebar-context__compliance-status" 
+                     [style.color]="getComplianceColor(complianceStatus()!.ccpa!.compliant)">
+                  {{ complianceStatus()!.ccpa!.compliant ? '✅ Compliant' : '⚠️ Issues' }}
+                </div>
+              </div>
+            }
+          </div>
+          
+          @if (!complianceStatus()!.overallCompliant) {
+            <div class="c-sidebar-context__compliance-issues">
+              <h5 class="c-sidebar-context__issues-title">⚠️ Compliance Issues</h5>
+              <ul class="c-sidebar-context__issues-list">
+                @if (complianceStatus()?.gdpr?.issues?.length) {
+                  @for (issue of complianceStatus()!.gdpr!.issues; track issue) {
+                    <li class="c-sidebar-context__issue-item">{{ issue }}</li>
+                  }
+                }
+                @if (complianceStatus()?.hipaa?.issues?.length) {
+                  @for (issue of complianceStatus()!.hipaa!.issues; track issue) {
+                    <li class="c-sidebar-context__issue-item">{{ issue }}</li>
+                  }
+                }
+              </ul>
+            </div>
+          }
+        } @else {
+          <div class="c-sidebar-context__empty-state">
+            <div class="c-sidebar-context__empty-icon">📄</div>
+            <p class="c-sidebar-context__empty-text">No image loaded or no detections found</p>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Tool Presets -->
+    @if (activeToolPresets().length > 0) {
+      <div class="c-sidebar-context__section">
+        <h4 class="c-sidebar-context__section-title">⚡ Quick Presets</h4>
+        <div class="c-sidebar-context__presets-grid">
+          @for (preset of activeToolPresets(); track preset.id) {
+            <button 
+              class="c-sidebar-context__preset-btn"
+              (click)="applyToolPreset(preset.id)"
+              [title]="preset.description">
+              <span class="c-sidebar-context__preset-icon">{{ preset.icon }}</span>
+              <span class="c-sidebar-context__preset-label">{{ preset.label }}</span>
+            </button>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- Quick Actions -->
+    @if (relevantQuickActions().length > 0) {
+      <div class="c-sidebar-context__section">
+        <h4 class="c-sidebar-context__section-title">🚀 Quick Actions</h4>
+        <div class="c-sidebar-context__actions-list">
+          @for (action of relevantQuickActions(); track action.id) {
+            <button 
+              class="c-sidebar-context__action-btn"
+              (click)="triggerQuickAction(action.id)">
+              <span class="c-sidebar-context__action-icon">{{ action.icon }}</span>
+              <span class="c-sidebar-context__action-label">{{ action.label }}</span>
+              <span class="c-sidebar-context__action-hotkey">{{ action.hotkey }}</span>
+            </button>
+          }
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Footer Controls -->
+  <div class="c-sidebar-context__footer">
+    <button 
+      class="c-sidebar-context__footer-btn"
+      (click)="resetToDefaults()">
+      🔄 Reset Defaults
+    </button>
+    <button 
+      class="c-sidebar-context__footer-btn"
+      (click)="exportToolSettings()">
+      💾 Export Settings
+    </button>
+  </div>
+</div>

@@ -1,0 +1,87 @@
+<!-- ui/organisms/analytics/accuracy-metrics.component.html -->
+<section class="c-accuracy-metrics">
+  <div class="c-accuracy-metrics__header">
+    <h3 class="c-accuracy-metrics__title">AI Accuracy Metrics</h3>
+    <p class="c-accuracy-metrics__subtitle">Real-time accuracy scores for detection models</p>
+  </div>
+  
+  <div class="c-accuracy-metrics__metrics-grid">
+    <div 
+      class="c-accuracy-metrics__metric-card"
+      [class.c-accuracy-metrics__metric-card--active]="selectedMetric() === 'a1'"
+      (click)="selectMetric('a1')"
+    >
+      <div class="c-accuracy-metrics__metric-header">
+        <span class="c-accuracy-metrics__metric-icon">👤</span>
+        <span class="c-accuracy-metrics__metric-name">Face Detection (A1)</span>
+      </div>
+      <div class="c-accuracy-metrics__metric-value">
+        {{ accuracyMetrics().a1 | number:'1.1-1' }}%
+      </div>
+      <app-progress-bar [value]="accuracyMetrics().a1" [max]="100"></app-progress-bar>
+    </div>
+    
+    <div 
+      class="c-accuracy-metrics__metric-card"
+      [class.c-accuracy-metrics__metric-card--active]="selectedMetric() === 'a2'"
+      (click)="selectMetric('a2')"
+    >
+      <div class="c-accuracy-metrics__metric-header">
+        <span class="c-accuracy-metrics__metric-icon">🚗</span>
+        <span class="c-accuracy-metrics__metric-name">License Plate (A2)</span>
+      </div>
+      <div class="c-accuracy-metrics__metric-value">
+        {{ accuracyMetrics().a2 | number:'1.1-1' }}%
+      </div>
+      <app-progress-bar [value]="accuracyMetrics().a2" [max]="100"></app-progress-bar>
+    </div>
+    
+    <div 
+      class="c-accuracy-metrics__metric-card"
+      [class.c-accuracy-metrics__metric-card--active]="selectedMetric() === 'a3'"
+      (click)="selectMetric('a3')"
+    >
+      <div class="c-accuracy-metrics__metric-header">
+        <span class="c-accuracy-metrics__metric-icon">📝</span>
+        <span class="c-accuracy-metrics__metric-name">Text Recognition (A3)</span>
+      </div>
+      <div class="c-accuracy-metrics__metric-value">
+        {{ accuracyMetrics().a3 | number:'1.1-1' }}%
+      </div>
+      <app-progress-bar [value]="accuracyMetrics().a3" [max]="100"></app-progress-bar>
+    </div>
+    
+    <div 
+      class="c-accuracy-metrics__metric-card"
+      [class.c-accuracy-metrics__metric-card--active]="selectedMetric() === 'a4'"
+      (click)="selectMetric('a4')"
+    >
+      <div class="c-accuracy-metrics__metric-header">
+        <span class="c-accuracy-metrics__metric-icon">✍️</span>
+        <span class="c-accuracy-metrics__metric-name">Signature (A4)</span>
+      </div>
+      <div class="c-accuracy-metrics__metric-value">
+        {{ accuracyMetrics().a4 | number:'1.1-1' }}%
+      </div>
+      <app-progress-bar [value]="accuracyMetrics().a4" [max]="100"></app-progress-bar>
+    </div>
+  </div>
+  
+  <div class="c-accuracy-metrics__details">
+    <h4 class="c-accuracy-metrics__details-title">{{ accuracyLabel() }} Details</h4>
+    <div class="c-accuracy-metrics__details-grid">
+      <div class="c-accuracy-metrics__detail-item">
+        <span class="c-accuracy-metrics__detail-label">Current Accuracy</span>
+        <span class="c-accuracy-metrics__detail-value">{{ currentAccuracy() | number:'1.1-1' }}%</span>
+      </div>
+      <div class="c-accuracy-metrics__detail-item">
+        <span class="c-accuracy-metrics__detail-label">Average Processing Time</span>
+        <span class="c-accuracy-metrics__detail-value">{{ getAverageProcessingTime() | number:'1.0-0' }}ms</span>
+      </div>
+      <div class="c-accuracy-metrics__detail-item">
+        <span class="c-accuracy-metrics__detail-label">Detections in Last Run</span>
+        <span class="c-accuracy-metrics__detail-value">{{ getDetectionCount() }}</span>
+      </div>
+    </div>
+  </div>
+</section>

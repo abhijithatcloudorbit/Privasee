@@ -1,22 +1,129 @@
 <div class="c-batch-panel">
-  <h3 class="c-batch-panel__title">Batch Processing</h3>
-  
-  @if (files && files.length > 0) {
-    <div class="c-batch-list">
-      @for (file of files; track $index) {
-        <div class="c-batch-item">
-          <div class="c-batch-item__progress">
-            <div class="c-batch-item__progress-bar" [style.width.%]="($index / files.length) * 100"></div>
+  <!-- Header -->
+  <div class="c-batch-panel__header">
+    <h3 class="c-batch-panel__title">
+      Batch Processing
+      <span class="c-batch-panel__count">{{ totalBatches() }}</span>
+    </h3>
+    <div class="c-batch-panel__stats">
+      <span class="c-batch-panel__stat">{{ processingBatchesCount() }} active</span>
+      <span class="c-batch-panel__stat">{{ completedBatchesCount() }} completed</span>
+    </div>
+  </div>
+
+  <!-- Overall Progress -->
+  <div class="c-batch-panel__progress">
+    <div class="c-batch-panel__progress-header">
+      <span>Overall Progress</span>
+      <span>{{ overallProgress() }}%</span>
+    </div>
+    <div class="c-batch-panel__progress-bar">
+      <div 
+        class="c-batch-panel__progress-fill"
+        [style.width.%]="overallProgress()">
+      </div>
+    </div>
+    <div class="c-batch-panel__progress-details">
+      <span>Processing: {{ processingBatchesCount() }}</span>
+      <span>Completed: {{ completedBatchesCount() }}</span>
+      <span>Pending: {{ pendingBatches() }}</span>
+      <span>Total: {{ totalBatches() }}</span>
+    </div>
+  </div>
+
+  <!-- Batches List -->
+  <div class="c-batch-panel__list">
+    @if (batches().length === 0) {
+      <div class="c-batch-panel__empty">
+        <p>No batches available</p>
+        <p class="c-batch-panel__empty-hint">
+          Upload images from the Upload page to get started
+        </p>
+      </div>
+    } @else {
+      @for (batch of batches(); track batch.id; let i = $index) {
+        <div 
+          class="c-batch-panel__batch"
+          [class.c-batch-panel__batch--selected]="isBatchSelected(batch.id)"
+          (click)="onBatchSelected(batch, 0)">
+          
+          <!-- Batch Header -->
+          <div class="c-batch-panel__batch-header">
+            <button 
+              class="c-batch-panel__batch-expand"
+              (click)="toggleBatchExpansion(batch.id); $event.stopPropagation()">
+              {{ isBatchExpanded(batch.id) ? '▼' : '▶' }}
+            </button>
+            
+            <div class="c-batch-panel__batch-info">
+              <div class="c-batch-panel__batch-name">{{ batch.name }}</div>
+              <div class="c-batch-panel__batch-meta">
+                <span class="c-batch-panel__batch-status" 
+                      [style.color]="getBatchStatusColor(batch.status)">
+                  {{ getBatchStatusIcon(batch.status) }} {{ batch.status | titlecase }}
+                </span>
+                <span class="c-batch-panel__batch-time">
+                  {{ formatTime(batch.createdAt) }}
+                </span>
+              </div>
+            </div>
+            
+            <div class="c-batch-panel__batch-progress">
+              <div class="c-batch-panel__batch-progress-bar">
+                <div [style.width.%]="batch.progress"></div>
+              </div>
+              <span>{{ batch.progress }}%</span>
+            </div>
           </div>
-          <span class="c-batch-item__name">File {{$index + 1}}</span>
+
+          <!-- Expanded Files -->
+          @if (isBatchExpanded(batch.id)) {
+            <div class="c-batch-panel__files">
+              @for (file of batch.files; track file.id; let idx = $index) {
+                <div 
+                  class="c-batch-panel__file"
+                  [class.c-batch-panel__file--selected]="isFileSelected(batch.id, idx)"
+                  (click)="onFileSelected(batch, idx); $event.stopPropagation()">
+                  
+                  <div class="c-batch-panel__file-icon">
+                    {{ getFileIcon(file.type) }}
+                  </div>
+                  
+                  <div class="c-batch-panel__file-info">
+                    <div class="c-batch-panel__file-name">{{ file.name }}</div>
+                    <div class="c-batch-panel__file-details">
+                      <span>{{ (file.size / 1024 / 1024).toFixed(2) }} MB</span>
+                      <span class="c-batch-panel__file-status">{{ file.status }}</span>
+                    </div>
+                  </div>
+                  
+                  <div class="c-batch-panel__file-progress">
+                    <div class="c-batch-panel__file-progress-bar">
+                      <div [style.width.%]="file.progress"></div>
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+          }
         </div>
       }
-    </div>
-    
-    <div class="c-batch-actions">
-      <button class="c-btn c-btn--primary">Start Processing</button>
-    </div>
-  } @else {
-    <p class="c-batch-panel__empty">No files in batch</p>
-  }
+    }
+  </div>
+
+  <!-- Actions -->
+  <div class="c-batch-panel__actions">
+    <button 
+      class="c-batch-panel__action"
+      (click)="clearCompletedBatches()"
+      [disabled]="completedBatchesCount() === 0">
+      Clear Completed
+    </button>
+    <button 
+      class="c-batch-panel__action"
+      (click)="startBatchProcessing(batches()[0]?.id || '')"
+      [disabled]="batches().length === 0">
+      Process All
+    </button>
+  </div>
 </div>

@@ -6,6 +6,7 @@ import { BadgeComponent } from '../../../atoms/misc/badge/badge.component';
 import { ProgressBarComponent } from '../../../atoms/feedback/progress-bar/progress-bar.component';
 import { TextBodyComponent } from '../../../atoms/typography/text-body/text-body.component';
 
+
 @Component({
   selector: 'app-image-preview-card',
   standalone: true,
@@ -26,13 +27,15 @@ export class ImagePreviewCardComponent {
   @Output() process = new EventEmitter<void>();
   @Output() remove = new EventEmitter<void>();
   
-  getStatusColor(): 'error' | 'primary' | 'success' | 'warning' | 'gray' {
-  // Return one of the literal types, not a string
-  if (this.status === 'error') return 'error';
-  if (this.status === 'completed') return 'success';
-  // ... etc
-  return 'gray';
-}
+  getStatusColor(): 'error' | 'primary' | 'success' | 'warning' | 'neutral' {
+    switch (this.status) {
+      case 'error': return 'error';
+      case 'processing': return 'primary';
+      case 'completed': return 'success';
+      case 'pending': return 'neutral';
+      default: return 'neutral';
+    }
+  }
   
   formatFileSize(bytes: number): string {
     if (bytes === 0) return '0 Bytes';

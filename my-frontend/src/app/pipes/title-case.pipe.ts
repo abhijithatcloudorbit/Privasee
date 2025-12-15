@@ -1,0 +1,18 @@
+import { Pipe, PipeTransform } from '@angular/core';
+
+@Pipe({
+  name: 'titlecase',
+  standalone: true
+})
+export class TitleCasePipe implements PipeTransform {
+  transform(value: string): string {
+    if (!value) return '';
+    return value
+      .replace(/_/g, ' ')
+      .replace(/-/g, ' ')
+      .toLowerCase()
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  }
+}

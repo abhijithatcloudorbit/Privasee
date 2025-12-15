@@ -2,45 +2,56 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  border-radius: 9999px;
   font-weight: 500;
   white-space: nowrap;
-  
-  // Variants
-  &--primary {
-    background-color: var(--color-primary-100);
-    color: var(--color-primary-800);
+  border: 1px solid transparent;
+
+  &--sm {
+    padding: 2px 8px;
+    font-size: 10px;
+    line-height: 1;
   }
-  
+
+  &--md {
+    padding: 4px 12px;
+    font-size: 12px;
+    line-height: 1.2;
+  }
+
+  &--lg {
+    padding: 6px 16px;
+    font-size: 14px;
+    line-height: 1.4;
+  }
+
+  &--primary {
+    background-color: rgba(59, 130, 246, 0.1);
+    color: rgb(59, 130, 246);
+    border-color: rgba(59, 130, 246, 0.2);
+  }
+
   &--success {
     background-color: rgba(16, 185, 129, 0.1);
-    color: var(--color-success-dark);
+    color: rgb(16, 185, 129);
+    border-color: rgba(16, 185, 129, 0.2);
   }
-  
-  &--warning {
-    background-color: rgba(245, 158, 11, 0.1);
-    color: var(--color-warning-dark);
-  }
-  
+
   &--error {
     background-color: rgba(239, 68, 68, 0.1);
-    color: var(--color-error-dark);
+    color: rgb(239, 68, 68);
+    border-color: rgba(239, 68, 68, 0.2);
   }
-  
-  &--gray {
-    background-color: var(--color-gray-100);
-    color: var(--color-gray-700);
+
+  &--warning {
+    background-color: rgba(245, 158, 11, 0.1);
+    color: rgb(245, 158, 11);
+    border-color: rgba(245, 158, 11, 0.2);
   }
-  
-  // Sizes
-  &--sm {
-    font-size: 0.75rem;
-    padding: 0.125rem 0.5rem;
-    border-radius: 0.25rem;
-  }
-  
-  &--md {
-    font-size: 0.875rem;
-    padding: 0.25rem 0.75rem;
-    border-radius: 0.375rem;
+
+  &--neutral {
+    background-color: rgb(243, 244, 246);
+    color: rgb(75, 85, 99);
+    border-color: rgb(229, 231, 235);
   }
 }

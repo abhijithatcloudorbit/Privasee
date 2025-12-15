@@ -1,0 +1,64 @@
+<div class="c-processing-page">
+  <div class="c-processing-page__single-view">
+    <!-- Left Sidebar: Batch Processing Panel -->
+    <div class="c-processing-page__sidebar">
+      <app-batch-processing-panel 
+        (batchSelected)="onBatchSelected($event)">
+      </app-batch-processing-panel>
+    </div>
+    
+    <!-- Right Side: Canvas Area -->
+    <div class="c-processing-page__canvas-area">
+      <!-- Processing Canvas -->
+      <app-processing-canvas-organism 
+        [batchItem]="selectedBatch()">
+      </app-processing-canvas-organism>
+    </div>
+  </div>
+</div>
+
+<div class="c-processing-page">
+  <div class="c-processing-page__single-view">
+    <!-- Left: Batch Processing Panel -->
+    <div class="c-processing-page__sidebar">
+      <app-batch-processing-panel 
+        (batchSelected)="onBatchSelected($event)">
+      </app-batch-processing-panel>
+    </div>
+    
+    <!-- Middle: Canvas Area -->
+    <div class="c-processing-page__canvas-area">
+      <app-processing-canvas-organism 
+        [batchItem]="selectedBatch()">
+      </app-processing-canvas-organism>
+    </div>
+    
+    <!-- Right: Detection Results Sidebar -->
+    <div class="c-processing-page__right-sidebar">
+      <app-detection-results-sidebar></app-detection-results-sidebar>
+    </div>
+  </div>
+</div>
+
+<div class="c-processing-page">
+  <div class="c-processing-page__single-view">
+    <!-- Left: Batch Processing Panel -->
+    <div class="c-processing-page__sidebar">
+      <app-batch-processing-panel 
+        (batchSelected)="onBatchSelected($event)">
+      </app-batch-processing-panel>
+    </div>
+    
+    <!-- Middle: Canvas Area -->
+    <div class="c-processing-page__canvas-area">
+      <app-processing-canvas-organism 
+        [batchItem]="selectedBatch()">
+      </app-processing-canvas-organism>
+    </div>
+    
+    <!-- Right: Detection Results Sidebar -->
+    <div class="c-processing-page__right-sidebar">
+      <app-detection-results-sidebar></app-detection-results-sidebar>
+    </div>
+  </div>
+</div>

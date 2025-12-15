@@ -1,0 +1,862 @@
+.c-accuracy-dashboard {
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e0e0e0;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.c-accuracy-dashboard__header {
+  padding: 24px;
+  background: linear-gradient(135deg, #1a2980 0%, #26d0ce 100%);
+  color: white;
+}
+
+.c-accuracy-dashboard__header-content {
+  margin-bottom: 24px;
+}
+
+.c-accuracy-dashboard__title {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0 0 8px;
+  color: white;
+}
+
+.c-accuracy-dashboard__subtitle {
+  font-size: 14px;
+  opacity: 0.9;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.c-accuracy-dashboard__overall-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.c-accuracy-dashboard__overall-stat {
+  text-align: center;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: transform 0.2s;
+  
+  &:hover {
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.25);
+  }
+}
+
+.c-accuracy-dashboard__stat-value {
+  font-size: 32px;
+  font-weight: 800;
+  margin-bottom: 8px;
+  color: white;
+}
+
+.c-accuracy-dashboard__stat-label {
+  font-size: 12px;
+  opacity: 0.9;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.c-accuracy-dashboard__controls {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 20px 24px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+  flex-wrap: wrap;
+  
+  @media (max-width: 1024px) {
+    gap: 16px;
+  }
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.c-accuracy-dashboard__control-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 200px;
+  
+  @media (max-width: 768px) {
+    min-width: auto;
+  }
+}
+
+.c-accuracy-dashboard__control-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #555;
+  white-space: nowrap;
+}
+
+.c-accuracy-dashboard__time-periods {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.c-accuracy-dashboard__period-btn {
+  padding: 6px 12px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 12px;
+  color: #555;
+  cursor: pointer;
+  transition: all 0.2s;
+  
+  &:hover {
+    background: #f0f0f0;
+  }
+  
+  &--active {
+    background: #3498db;
+    color: white;
+    border-color: #2980b9;
+  }
+}
+
+.c-accuracy-dashboard__category-filter {
+  flex: 1;
+}
+
+.c-accuracy-dashboard__category-select {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #333;
+  background: white;
+  cursor: pointer;
+  
+  &:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+  }
+}
+
+.c-accuracy-dashboard__view-toggle {
+  display: flex;
+  gap: 4px;
+}
+
+.c-accuracy-dashboard__view-btn {
+  padding: 8px 12px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 12px;
+  color: #555;
+  cursor: pointer;
+  transition: all 0.2s;
+  
+  &:hover {
+    background: #f0f0f0;
+  }
+  
+  &--active {
+    background: #3498db;
+    color: white;
+    border-color: #2980b9;
+  }
+}
+
+.c-accuracy-dashboard__actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  
+  @media (max-width: 768px) {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+}
+
+.c-accuracy-dashboard__action-btn {
+  padding: 8px 16px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  color: #555;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  
+  &:hover:not(:disabled) {
+    background: #e9ecef;
+  }
+  
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.c-accuracy-dashboard__checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #555;
+  cursor: pointer;
+  white-space: nowrap;
+  
+  input {
+    margin: 0;
+  }
+}
+
+.c-accuracy-dashboard__alerts {
+  padding: 20px 24px;
+  background: #fff8e1;
+  border-bottom: 1px solid #ffe082;
+}
+
+.c-accuracy-dashboard__alerts-header {
+  margin-bottom: 16px;
+}
+
+.c-accuracy-dashboard__alerts-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #f39c12;
+  margin: 0;
+}
+
+.c-accuracy-dashboard__alerts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.c-accuracy-dashboard__alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 16px;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  border-left-width: 4px;
+  transition: all 0.2s;
+  
+  &:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.c-accuracy-dashboard__alert-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.c-accuracy-dashboard__alert-content {
+  flex: 1;
+}
+
+.c-accuracy-dashboard__alert-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 4px;
+}
+
+.c-accuracy-dashboard__alert-message {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+.c-accuracy-dashboard__alert-time {
+  font-size: 11px;
+  color: #888;
+}
+
+.c-accuracy-dashboard__alert-action {
+  padding: 6px 12px;
+  background: #f8f9fa;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 12px;
+  color: #555;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  
+  &:hover {
+    background: #e9ecef;
+  }
+}
+
+.c-accuracy-dashboard__content {
+  padding: 24px;
+  min-height: 400px;
+}
+
+.c-accuracy-dashboard__cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 20px;
+  
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.c-accuracy-dashboard__card {
+  padding: 20px;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  background: white;
+  transition: all 0.3s ease;
+  position: relative;
+  
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    border-color: #3498db;
+  }
+  
+  &--critical {
+    border-left: 4px solid #e74c3c;
+    background: linear-gradient(to right, rgba(231, 76, 60, 0.03), white);
+  }
+  
+  &--warning {
+    border-top: 3px solid #f39c12;
+  }
+}
+
+.c-accuracy-dashboard__card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.c-accuracy-dashboard__card-icon {
+  font-size: 24px;
+}
+
+.c-accuracy-dashboard__card-category {
+  font-size: 16px;
+  font-weight: 600;
+  color: #2c3e50;
+  flex: 1;
+}
+
+.c-accuracy-dashboard__card-status {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid currentColor;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.c-accuracy-dashboard__card-content {
+  margin-bottom: 20px;
+}
+
+.c-accuracy-dashboard__card-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 8px;
+  color: #2c3e50;
+  line-height: 1.3;
+}
+
+.c-accuracy-dashboard__card-desc {
+  font-size: 13px;
+  color: #666;
+  margin: 0 0 20px;
+  line-height: 1.5;
+}
+
+.c-accuracy-dashboard__accuracy-display {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.c-accuracy-dashboard__current-accuracy,
+.c-accuracy-dashboard__target-accuracy,
+.c-accuracy-dashboard__trend-indicator {
+  text-align: center;
+  flex: 1;
+}
+
+.c-accuracy-dashboard__accuracy-value {
+  display: block;
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.c-accuracy-dashboard__accuracy-label {
+  display: block;
+  font-size: 11px;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.c-accuracy-dashboard__trend-value {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.c-accuracy-dashboard__trend-label {
+  display: block;
+  font-size: 11px;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.c-accuracy-dashboard__progress {
+  margin-bottom: 16px;
+}
+
+.c-accuracy-dashboard__progress-bar {
+  height: 8px;
+  background: #e9ecef;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.c-accuracy-dashboard__progress-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.c-accuracy-dashboard__progress-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #666;
+}
+
+.c-accuracy-dashboard__progress-label {
+  font-weight: 600;
+}
+
+.c-accuracy-dashboard__progress-gap {
+  font-weight: 700;
+}
+
+.c-accuracy-dashboard__benchmark,
+.c-accuracy-dashboard__confidence {
+  font-size: 12px;
+  color: #888;
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-top: 1px solid #f0f0f0;
+}
+
+.c-accuracy-dashboard__benchmark-label,
+.c-accuracy-dashboard__confidence-label {
+  font-weight: 600;
+}
+
+.c-accuracy-dashboard__card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 12px;
+  border-top: 1px solid #f0f0f0;
+  font-size: 11px;
+  color: #888;
+}
+
+.c-accuracy-dashboard__charts {
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  overflow: hidden;
+}
+
+.c-accuracy-dashboard__charts-header {
+  padding: 20px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.c-accuracy-dashboard__charts-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+  color: #2c3e50;
+}
+
+.c-accuracy-dashboard__charts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  padding: 20px;
+  
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.c-accuracy-dashboard__chart-container {
+  padding: 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background: white;
+  transition: all 0.2s;
+  
+  &:hover {
+    border-color: #3498db;
+    box-shadow: 0 4px 8px rgba(52, 152, 219, 0.1);
+  }
+}
+
+.c-accuracy-dashboard__chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.c-accuracy-dashboard__chart-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.c-accuracy-dashboard__chart-stats {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.c-accuracy-dashboard__chart {
+  margin-bottom: 16px;
+}
+
+.c-accuracy-dashboard__chart-svg {
+  display: block;
+}
+
+.c-accuracy-dashboard__chart-legend {
+  display: flex;
+  gap: 16px;
+  margin-top: 12px;
+}
+
+.c-accuracy-dashboard__legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: #666;
+}
+
+.c-accuracy-dashboard__legend-color {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+}
+
+.c-accuracy-dashboard__chart-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.c-accuracy-dashboard__chart-metric {
+  text-align: center;
+}
+
+.c-accuracy-dashboard__metric-label {
+  font-size: 10px;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.c-accuracy-dashboard__metric-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.c-accuracy-dashboard__table {
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  overflow: hidden;
+}
+
+.c-accuracy-dashboard__table-header {
+  padding: 20px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.c-accuracy-dashboard__table-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+  color: #2c3e50;
+}
+
+.c-accuracy-dashboard__table-content {
+  width: 100%;
+  border-collapse: collapse;
+  
+  th, td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid #e9ecef;
+  }
+  
+  th {
+    font-size: 12px;
+    font-weight: 600;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: #f8f9fa;
+  }
+  
+  td {
+    font-size: 13px;
+    color: #333;
+  }
+  
+  tr:hover {
+    background: #f8f9fa;
+  }
+}
+
+.c-accuracy-dashboard__table-category {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.c-accuracy-dashboard__table-icon {
+  font-size: 16px;
+}
+
+.c-accuracy-dashboard__table-value {
+  font-weight: 600;
+}
+
+.c-accuracy-dashboard__table-gap {
+  font-weight: 700;
+}
+
+.c-accuracy-dashboard__table-trend {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.c-accuracy-dashboard__table-status {
+  font-weight: 600;
+}
+
+.c-accuracy-dashboard__table-benchmark {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  
+  span:first-child {
+    font-weight: 600;
+  }
+  
+  span:last-child {
+    font-size: 11px;
+  }
+}
+
+.c-accuracy-dashboard__table-time {
+  font-size: 11px;
+  color: #888;
+}
+
+.c-accuracy-dashboard__empty {
+  text-align: center;
+  padding: 60px 20px;
+  background: #f8f9fa;
+  border: 2px dashed #e0e0e0;
+  border-radius: 12px;
+}
+
+.c-accuracy-dashboard__empty-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.c-accuracy-dashboard__empty-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 0 0 8px;
+}
+
+.c-accuracy-dashboard__empty-desc {
+  font-size: 14px;
+  color: #666;
+  margin: 0 0 20px;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.c-accuracy-dashboard__empty-btn {
+  padding: 10px 24px;
+  background: #3498db;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  
+  &:hover {
+    background: #2980b9;
+  }
+}
+
+.c-accuracy-dashboard__footer {
+  padding: 20px 24px;
+  background: #f8f9fa;
+  border-top: 1px solid #e9ecef;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.c-accuracy-dashboard__footer-stats {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.c-accuracy-dashboard__footer-stat {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+}
+
+.c-accuracy-dashboard__footer-label {
+  color: #666;
+  font-weight: 600;
+}
+
+.c-accuracy-dashboard__footer-value {
+  color: #333;
+  font-weight: 700;
+}
+
+.c-accuracy-dashboard__footer-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  
+  @media (max-width: 768px) {
+    justify-content: space-between;
+    width: 100%;
+  }
+}
+
+.c-accuracy-dashboard__footer-sort {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #555;
+  background: white;
+  cursor: pointer;
+  
+  &:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+  }
+}
+
+.c-accuracy-dashboard__footer-note {
+  font-size: 12px;
+  color: #888;
+}
+
+// Animation for loading state
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.c-accuracy-dashboard--loading {
+  animation: pulse 1.5s ease-in-out infinite;
+}

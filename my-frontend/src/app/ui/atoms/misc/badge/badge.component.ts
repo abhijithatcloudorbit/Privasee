@@ -29,6 +29,6 @@ import { CommonModule } from '@angular/common';
   `]
 })
 export class BadgeComponent {
-  @Input() variant: 'primary' | 'success' | 'error' | 'warning' | 'gray' = 'primary';
-  @Input() size: 'sm' | 'md' = 'md';
+  @Input() variant: 'primary' | 'success' | 'error' | 'warning' | 'neutral' = 'neutral';
+  @Input() size: 'sm' | 'md' | 'lg' = 'md';
 }

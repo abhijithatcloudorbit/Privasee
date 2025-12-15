@@ -1,0 +1,57 @@
+<div class="c-toolbar-panel">
+  <!-- Tools Section -->
+  <div class="c-toolbar-panel__section">
+    <h4 class="c-toolbar-panel__title">Tools</h4>
+    <div class="c-toolbar-panel__tools">
+      @for (tool of tools; track tool.id) {
+        <button 
+          class="c-toolbar-panel__tool"
+          [class.c-toolbar-panel__tool--active]="isToolActive(tool.id)"
+          (click)="setTool(tool.id)">
+          <span class="c-toolbar-panel__tool-icon">{{ tool.icon }}</span>
+          <span class="c-toolbar-panel__tool-label">{{ tool.label }}</span>
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- Filters Section (only shown when detections are selected) -->
+  @if (hasSelectedDetections()) {
+    <div class="c-toolbar-panel__section">
+      <h4 class="c-toolbar-panel__title">Apply Filter to Selected</h4>
+      <div class="c-toolbar-panel__filters">
+        @for (filter of filters; track filter.id) {
+          <button 
+            class="c-toolbar-panel__filter"
+            (click)="applyFilterToSelected(filter.id)">
+            {{ filter.label }}
+          </button>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- Actions Section -->
+  <div class="c-toolbar-panel__section">
+    <h4 class="c-toolbar-panel__title">Actions</h4>
+    <div class="c-toolbar-panel__actions">
+      <button 
+        class="c-toolbar-panel__action"
+        (click)="clearAllFilters()"
+        [disabled]="!hasSelectedDetections()">
+        Clear Filters
+      </button>
+      <button 
+        class="c-toolbar-panel__action c-toolbar-panel__action--danger"
+        (click)="resetCanvas()">
+        Reset Canvas
+      </button>
+    </div>
+  </div>
+
+  <!-- Current Tool Indicator -->
+  <div class="c-toolbar-panel__current-tool">
+    <span class="c-toolbar-panel__current-label">Current Tool:</span>
+    <span class="c-toolbar-panel__current-value">{{ selectedTool() | titlecase }}</span>
+  </div>
+</div>

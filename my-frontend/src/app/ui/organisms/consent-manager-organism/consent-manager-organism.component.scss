@@ -1,0 +1,46 @@
+// consent-manager-organism.component.scss
+.c-consent-manager {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  color: #333;
+  background: #f8f9fa;
+  min-height: 100vh;
+  
+  &__header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 2rem;
+    border-radius: 0 0 12px 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  }
+  
+  &__stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+  
+  &__stat {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 1rem;
+    border-radius: 8px;
+    text-align: center;
+    backdrop-filter: blur(10px);
+  }
+  
+  &__nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background: white;
+    border-bottom: 1px solid #eaeaea;
+  }
+  
+  &__content {
+    padding: 2rem;
+    min-height: 60vh;
+  }
+  
+  // Add more styles as needed...
+}

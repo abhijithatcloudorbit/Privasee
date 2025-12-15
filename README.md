@@ -23,3 +23,7 @@ AI based Image Privacy Filter Project
  | Processing latency |Real-time blurring slows video feed | Use TensorRT/OpenVINO for optimized inference |
  | Scalability & Storage | Too many large images | Use AWS S3 with compression and metadata logging |
  | Data Security | Sensitive files stored insecurely | Encrypt with HTTPS, JWT auth & access control layer |
+
+
+
+ 

@@ -3,11 +3,11 @@
 
   <div class="c-upload-card__content">
     <div class="c-upload-card__name">
-      {{ file.size | number }} bytes
+      {{ (file && file.size) || 0 | number }} bytes
     </div>
 
     <div class="c-upload-card__meta">
-      {{ file?.size || 0 | number }} bytes
+      {{ (file && file.size) || 0 | number }} bytes
     </div>
   </div>
 </div>

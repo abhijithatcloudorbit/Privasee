@@ -11,3 +11,18 @@
 @use './utilities/visibility';
 @use './utilities/spacing-helpers';
 
+@use 'variables';
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-family-sans);
+  font-size: var(--text-base);
+  line-height: 1.5;
+  color: var(--color-gray-900);
+  background-color: var(--color-bg-primary);
+}
