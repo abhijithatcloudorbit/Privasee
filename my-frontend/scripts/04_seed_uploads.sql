@@ -1,0 +1,9 @@
+-- Seed Sample Uploads
+
+INSERT INTO uploads (id, user_id, filename, original_filename, file_size, file_type, thumbnail_url, original_url, status, compliance_mode, total_detections, processing_time_ms, uploaded_at, processed_at) VALUES
+('upload-1', 'user-1', 'mumbai_surveillance_001.jpg', 'surveillance_cam_001.jpg', 2458000, 'image/jpeg', '/surveillance-camera-footage.jpg', '/surveillance-camera-footage.jpg', 'completed', 'strict', 12, 2300, DATE_SUB(NOW(), INTERVAL 5 MINUTE), DATE_SUB(NOW(), INTERVAL 4 MINUTE)),
+('upload-2', 'user-2', 'patient_record_sharma.pdf', 'medical_record_scan.pdf', 1245000, 'application/pdf', '/medical-document.png', '/medical-document.png', 'completed', 'strict', 8, 4100, DATE_SUB(NOW(), INTERVAL 15 MINUTE), DATE_SUB(NOW(), INTERVAL 14 MINUTE)),
+('upload-3', 'user-3', 'delhi_parking_lot.mp4', 'parking_lot_footage.mp4', 8900000, 'video/mp4', '/busy-city-parking-lot.png', '/busy-city-parking-lot.png', 'processing', 'moderate', 0, NULL, DATE_SUB(NOW(), INTERVAL 3 MINUTE), NULL),
+('upload-4', 'user-1', 'bangalore_conference_2024.jpg', 'conference_photo.jpg', 3200000, 'image/jpeg', '/modern-conference-room.png', '/modern-conference-room.png', 'completed', 'custom', 24, 3800, DATE_SUB(NOW(), INTERVAL 45 MINUTE), DATE_SUB(NOW(), INTERVAL 43 MINUTE)),
+('upload-5', 'user-4', 'pune_street_view.jpg', 'street_surveillance.jpg', 2890000, 'image/jpeg', '/surveillance-camera-footage.jpg', '/surveillance-camera-footage.jpg', 'completed', 'strict', 15, 2700, DATE_SUB(NOW(), INTERVAL 2 HOUR), DATE_SUB(NOW(), INTERVAL 119 MINUTE)),
+('upload-6', 'user-5', 'chennai_hospital_doc.pdf', 'patient_records.pdf', 1560000, 'application/pdf', '/medical-document.png', '/medical-document.png', 'completed', 'strict', 6, 3200, DATE_SUB(NOW(), INTERVAL 3 HOUR), DATE_SUB(NOW(), INTERVAL 178 MINUTE));
