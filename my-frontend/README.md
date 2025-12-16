@@ -1,59 +1,30 @@
-# ImagePrivacyFilterFrontend
+# First app page
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.0.1.
+*Automatically synced with your [v0.app](https://v0.app) deployments*
 
-## Development server
+[![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/pilla-yojanixs-projects/v0-first-app-page)
+[![Built with v0](https://img.shields.io/badge/Built%20with-v0.app-black?style=for-the-badge)](https://v0.app/chat/ttYfUwgIHec)
 
-To start a local development server, run:
+## Overview
 
-```bash
-ng serve
-```
+This repository will stay in sync with your deployed chats on [v0.app](https://v0.app).
+Any changes you make to your deployed app will be automatically pushed to this repository from [v0.app](https://v0.app).
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## Deployment
 
-## Code scaffolding
+Your project is live at:
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+**[https://vercel.com/pilla-yojanixs-projects/v0-first-app-page](https://vercel.com/pilla-yojanixs-projects/v0-first-app-page)**
 
-```bash
-ng generate component component-name
-```
+## Build your app
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+Continue building your app on:
 
-```bash
-ng generate --help
-```
+**[https://v0.app/chat/ttYfUwgIHec](https://v0.app/chat/ttYfUwgIHec)**
 
-## Building
+## How It Works
 
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+1. Create and modify your project using [v0.app](https://v0.app)
+2. Deploy your chats from the v0 interface
+3. Changes are automatically pushed to this repository
+4. Vercel deploys the latest version from this repository

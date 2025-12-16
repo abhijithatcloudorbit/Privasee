@@ -1,9 +1,0 @@
-<div class="c-chip" [class]="'c-chip--' + size" [class.c-chip--selected]="selected" (click)="onClick()">
-  <span class="c-chip__content">
-    <ng-content></ng-content>
-  </span>
-  
-  <button *ngIf="removable" class="c-chip__remove" (click)="onRemove($event)">
-    ×
-  </button>
-</div>
