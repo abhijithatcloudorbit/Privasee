@@ -86,11 +86,14 @@ export default function UploadPage() {
       [model]: !prev[model],
     }))
   }
-const resolveProcessingMode = () => {
-  if (selectedModels.licensePlate) return "license_plate"
-  if (selectedModels.face) return "face"
-  return "face"
-}
+
+  /* ----------- ADDED CODE SNIPPET (MODE RESOLUTION) ----------- */
+  const resolveProcessingMode = () => {
+    if (selectedModels.licensePlate) return "license_plate"
+    if (selectedModels.face) return "face"
+    return "face"
+  }
+  /* ----------------------------------------------------------- */
 
   /* ---------------- Process Logic ---------------- */
 
@@ -102,25 +105,24 @@ const resolveProcessingMode = () => {
       setProgress(0)
       setOutputUrl(null)
 
-      // 1 Upload
+      // 1️⃣ Upload
       const uploadRes = await uploadFile(selectedFiles[0])
 
-      // 2 Resolve processing mode
-      let mode: "face" | "license_plate" = "face"
-      if (selectedModels.licensePlate) {
-        mode = "license_plate"
-      }
+      /* ----------- ADDED CODE SNIPPET (USE MODE) ----------- */
+      const mode = resolveProcessingMode()
+      /* --------------------------------------------------- */
 
-      // 3 Start processing
+      // 2️⃣ Start processing
       const processRes = await startProcessing(
         uploadRes.file_id,
         mode
       )
-      
+      if (!processRes?.job_id) {
+  throw new Error("Processing did not return a job_id")
+}
+     const jobId = processRes.job_id
 
-      const jobId = processRes.job_id
-
-      // 4 Poll status
+      // 3️⃣ Poll status
       pollingRef.current = setInterval(async () => {
         try {
           const statusRes = await getJobStatus(jobId)
@@ -136,8 +138,8 @@ const resolveProcessingMode = () => {
             clearInterval(pollingRef.current!)
             setProcessing(false)
 
-            // 5 Fetch result
-           const resultUrl = `${getResultUrl(jobId)}?t=${Date.now()}`
+            // 4️⃣ Fetch result
+            const resultUrl = `${getResultUrl(jobId)}?t=${Date.now()}`
             setOutputUrl(resultUrl)
           }
         } catch (err) {

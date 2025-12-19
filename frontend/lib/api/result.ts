@@ -3,5 +3,5 @@ export function getResultUrl(jobId: string): string {
     throw new Error("NEXT_PUBLIC_PROCESSING_API is not defined")
   }
 
-  return `${process.env.NEXT_PUBLIC_PROCESSING_API}/result/${jobId}`
+  return `${process.env.NEXT_PUBLIC_PROCESSING_API}/result/${jobId}?v=${Date.now()}`
 }

@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi import FastAPI, UploadFile, File, HTTPException, Query
 from fastapi.responses import Response
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -22,10 +22,10 @@ app.add_middleware(
 )
 
 # -----------------------------
-# IN-MEMORY STORAGE (DEMO SAFE)
+# IN-MEMORY STORAGE
 # -----------------------------
-FILES = {}   # file_id -> bytes
-JOBS = {}    # job_id -> status/progress/result
+FILES = {}   # file_id -> image bytes
+JOBS = {}    # job_id -> status / progress / result
 
 # -----------------------------
 # CREATE OUTPUT FOLDERS
@@ -49,7 +49,7 @@ async def upload_file(file: UploadFile = File(...)):
     return {"file_id": file_id}
 
 # -----------------------------
-# BACKGROUND JOB LOGIC
+# BACKGROUND JOB
 # -----------------------------
 def run_job(job_id: str, file_id: str, mode: str):
     try:
@@ -60,8 +60,10 @@ def run_job(job_id: str, file_id: str, mode: str):
 
         if mode == "license_plate":
             result = blur_lp_from_bytes(img_bytes)
-        else:
+        elif mode == "face":
             result = blur_faces_from_bytes(img_bytes)
+        else:
+            raise ValueError(f"Unsupported mode: {mode}")
 
         JOBS[job_id]["progress"] = 90
         JOBS[job_id]["result"] = result
@@ -76,9 +78,18 @@ def run_job(job_id: str, file_id: str, mode: str):
 # START PROCESSING
 # -----------------------------
 @app.post("/process")
-def start_processing(file_id: str, mode: str = "face"):
+def start_processing(
+    file_id: str = Query(...),
+    mode: str = Query(...)
+):
     if file_id not in FILES:
         raise HTTPException(status_code=404, detail="File not found")
+
+    if mode not in ("face", "license_plate"):
+        raise HTTPException(
+            status_code=400,
+            detail=f"Invalid mode: {mode}"
+        )
 
     job_id = str(uuid4())
 
@@ -127,7 +138,7 @@ def get_result(job_id: str):
         content=job["result"],
         media_type="image/jpeg",
         headers={
-            "Content-Disposition": "attachment; filename=processed.jpg"
+            "Content-Disposition": "inline; filename=processed.jpg"
         },
     )
 

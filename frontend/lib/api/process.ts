@@ -1,10 +1,10 @@
 export async function startProcessing(
   fileId: string,
-  rawFileKey: string
+  mode: "face" | "license_plate"
 ) {
   const params = new URLSearchParams({
     file_id: fileId,
-    raw_file_key: rawFileKey,
+    mode: mode,
   })
 
   const res = await fetch(
@@ -17,8 +17,5 @@ export async function startProcessing(
     throw new Error(`Process failed: ${res.status} ${text}`)
   }
 
-  return res.json() as Promise<{
-    job_id: string
-    status: string
-  }>
+  return res.json()
 }
