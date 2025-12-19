@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState } from "react"
+import { useState, useRef } from "react"
 
 import {
   Card,
@@ -19,7 +19,6 @@ import {
   FileImage,
   Shield,
   Settings,
-  Info,
 } from "lucide-react"
 
 import { uploadFile } from "@/lib/api/upload"
@@ -34,7 +33,10 @@ export default function UploadPage() {
   const [processing, setProcessing] = useState(false)
   const [progress, setProgress] = useState(0)
 
-  // 🔁 RESTORED OPTIONS
+  const [outputUrl, setOutputUrl] = useState<string | null>(null)
+
+  const pollingRef = useRef<NodeJS.Timeout | null>(null)
+
   const [selectedModels, setSelectedModels] = useState({
     face: true,
     person: true,
@@ -70,7 +72,10 @@ export default function UploadPage() {
     }
   }
 
-  const removeFile = () => setSelectedFiles([])
+  const removeFile = () => {
+    setSelectedFiles([])
+    setOutputUrl(null)
+  }
 
   const formatBytes = (bytes: number) =>
     (bytes / (1024 * 1024)).toFixed(2) + " MB"
@@ -81,6 +86,11 @@ export default function UploadPage() {
       [model]: !prev[model],
     }))
   }
+const resolveProcessingMode = () => {
+  if (selectedModels.licensePlate) return "license_plate"
+  if (selectedModels.face) return "face"
+  return "face"
+}
 
   /* ---------------- Process Logic ---------------- */
 
@@ -90,39 +100,48 @@ export default function UploadPage() {
     try {
       setProcessing(true)
       setProgress(0)
+      setOutputUrl(null)
 
-      // 1️⃣ Upload
+      // 1 Upload
       const uploadRes = await uploadFile(selectedFiles[0])
 
-      // 2️⃣ Start processing
+      // 2 Resolve processing mode
+      let mode: "face" | "license_plate" = "face"
+      if (selectedModels.licensePlate) {
+        mode = "license_plate"
+      }
+
+      // 3 Start processing
       const processRes = await startProcessing(
         uploadRes.file_id,
-        uploadRes.raw_file_key
+        mode
       )
+      
 
       const jobId = processRes.job_id
 
-      // 3️⃣ Poll status
-      const interval = setInterval(async () => {
+      // 4 Poll status
+      pollingRef.current = setInterval(async () => {
         try {
-          const status = await getJobStatus(jobId)
-          setProgress(status.progress)
+          const statusRes = await getJobStatus(jobId)
+          setProgress(statusRes.progress ?? 0)
 
-          if (status.status === "FAILED") {
-            clearInterval(interval)
+          if (statusRes.status === "FAILED") {
+            clearInterval(pollingRef.current!)
             setProcessing(false)
             console.error("Processing failed")
           }
 
-          if (status.status === "COMPLETED") {
-            clearInterval(interval)
+          if (statusRes.status === "COMPLETED") {
+            clearInterval(pollingRef.current!)
             setProcessing(false)
 
-            const url = getResultUrl(jobId)
-            window.open(url, "_blank")
+            // 5 Fetch result
+           const resultUrl = `${getResultUrl(jobId)}?t=${Date.now()}`
+            setOutputUrl(resultUrl)
           }
         } catch (err) {
-          clearInterval(interval)
+          clearInterval(pollingRef.current!)
           setProcessing(false)
           console.error("Status polling failed", err)
         }
@@ -137,7 +156,6 @@ export default function UploadPage() {
 
   return (
     <div className="space-y-8">
-      {/* Header */}
       <div>
         <h1 className="text-4xl font-semibold tracking-tight">
           Secure Data Upload
@@ -147,7 +165,6 @@ export default function UploadPage() {
         </p>
       </div>
 
-      {/* Detection Controls */}
       <Card>
         <CardHeader>
           <div className="flex items-center gap-2">
@@ -194,7 +211,6 @@ export default function UploadPage() {
         </CardContent>
       </Card>
 
-      {/* Compliance Mode */}
       <Card>
         <CardHeader>
           <div className="flex items-center gap-2">
@@ -228,7 +244,6 @@ export default function UploadPage() {
         </CardContent>
       </Card>
 
-      {/* File Upload */}
       <Card>
         <CardHeader>
           <div className="flex items-center gap-2">
@@ -292,6 +307,19 @@ export default function UploadPage() {
               ? `Processing ${progress}%`
               : "Upload & Process"}
           </Button>
+
+          {outputUrl && (
+            <div className="pt-6">
+              <h3 className="text-lg font-medium mb-3">
+                Processed Output
+              </h3>
+              <img
+                src={outputUrl}
+                alt="Processed result"
+                className="rounded-lg border max-w-full"
+              />
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
