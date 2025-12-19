@@ -5,6 +5,9 @@ import { useEffect, useState } from "react"
 import { useRouter, usePathname } from "next/navigation"
 import { SidebarNav } from "@/components/sidebar-nav"
 
+import { ToastProvider } from "@/components/ui/use-toast"
+import { Toaster } from "@/components/ui/toaster"
+
 export default function DashboardLayout({
   children,
 }: {
@@ -12,6 +15,7 @@ export default function DashboardLayout({
 }) {
   const router = useRouter()
   const pathname = usePathname()
+
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [isChecking, setIsChecking] = useState(true)
   const [isCollapsed, setIsCollapsed] = useState(false)
@@ -58,15 +62,20 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className="flex min-h-screen bg-background">
-      <SidebarNav />
-      <main
-        className={`flex-1 w-full min-w-0 p-6 lg:p-8 transition-all duration-300 ${
-          isCollapsed ? "lg:ml-16" : "lg:ml-56"
-        }`}
-      >
-        <div className="max-w-7xl mx-auto">{children}</div>
-      </main>
-    </div>
+    <ToastProvider>
+      <div className="flex min-h-screen bg-background">
+        <SidebarNav />
+        <main
+          className={`flex-1 w-full min-w-0 p-6 lg:p-8 transition-all duration-300 ${
+            isCollapsed ? "lg:ml-16" : "lg:ml-56"
+          }`}
+        >
+          <div className="max-w-7xl mx-auto">{children}</div>
+        </main>
+      </div>
+
+      {/* Toast renderer */}
+      <Toaster />
+    </ToastProvider>
   )
 }

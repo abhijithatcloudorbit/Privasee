@@ -1,0 +1,19 @@
+# Core framework
+fastapi
+uvicorn
+
+# Data validation
+pydantic
+
+# S3-compatible storage (MinIO locally, AWS S3 in prod)
+boto3
+
+# Environment variables
+python-dotenv
+
+# File uploads
+python-multipart
+
+# Testing
+pytest
+pytest-cov

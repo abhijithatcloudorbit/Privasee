@@ -1,28 +1,38 @@
 from fastapi import APIRouter, HTTPException
-from fastapi.responses import FileResponse
 from services.job_service import JOBS
-import mimetypes
-from pathlib import Path
+from storage.s3_client import get_s3_client
+import os
 
 router = APIRouter()
+
+s3 = get_s3_client()
+PROCESSED_BUCKET = os.getenv("S3_PROCESSED_BUCKET")
 
 
 @router.get("/result/{job_id}")
 def get_result(job_id: str):
     job = JOBS.get(job_id)
+
     if not job:
         raise HTTPException(status_code=404, detail="Job not found")
 
     if job.status != "COMPLETED":
         raise HTTPException(status_code=409, detail="Job not completed")
 
-    file_path = Path(job.result_path)
+    if not job.result_key:
+        raise HTTPException(status_code=500, detail="Result not available")
 
-    media_type, _ = mimetypes.guess_type(file_path.name)
-    media_type = media_type or "application/octet-stream"
-
-    return FileResponse(
-        path=file_path,
-        media_type=media_type,
-        filename=file_path.name
+    presigned_url = s3.generate_presigned_url(
+        ClientMethod="get_object",
+        Params={
+            "Bucket": PROCESSED_BUCKET,
+            "Key": job.result_key
+        },
+        ExpiresIn=600
     )
+
+    return {
+        "job_id": job.job_id,
+        "status": job.status,
+        "download_url": presigned_url
+    }

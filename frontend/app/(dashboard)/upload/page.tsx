@@ -3,17 +3,29 @@
 import type React from "react"
 import { useState } from "react"
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Label } from "@/components/ui/label"
 
-import { Upload, X, FileImage, Shield, Settings, Info } from "lucide-react"
+import {
+  Upload,
+  X,
+  FileImage,
+  Shield,
+  Settings,
+  Info,
+} from "lucide-react"
 
-// 🔌 Backend API helpers
 import { uploadFile } from "@/lib/api/upload"
 import { startProcessing } from "@/lib/api/process"
 import { getJobStatus } from "@/lib/api/status"
+import { getResultUrl } from "@/lib/api/result"
 
 export default function UploadPage() {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
@@ -22,6 +34,7 @@ export default function UploadPage() {
   const [processing, setProcessing] = useState(false)
   const [progress, setProgress] = useState(0)
 
+  // 🔁 RESTORED OPTIONS
   const [selectedModels, setSelectedModels] = useState({
     face: true,
     person: true,
@@ -48,60 +61,28 @@ export default function UploadPage() {
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault()
     setIsDragging(false)
-    const files = Array.from(e.dataTransfer.files)
-    setSelectedFiles((prev) => [...prev, ...files])
+    setSelectedFiles([e.dataTransfer.files[0]])
   }
 
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      const files = Array.from(e.target.files)
-      setSelectedFiles((prev) => [...prev, ...files])
+      setSelectedFiles([e.target.files[0]])
     }
   }
 
-  const removeFile = (index: number) => {
-    setSelectedFiles((prev) => prev.filter((_, i) => i !== index))
-  }
+  const removeFile = () => setSelectedFiles([])
 
   const formatBytes = (bytes: number) =>
     (bytes / (1024 * 1024)).toFixed(2) + " MB"
 
   const toggleModel = (model: keyof typeof selectedModels) => {
-    setSelectedModels((prev) => ({ ...prev, [model]: !prev[model] }))
+    setSelectedModels((prev) => ({
+      ...prev,
+      [model]: !prev[model],
+    }))
   }
 
-  /* ---------------- Download Helper ---------------- */
-
-  async function downloadResult(jobId: string) {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_PROCESSING_API}/result/${jobId}`
-    )
-
-    if (!res.ok) {
-      throw new Error("Failed to download processed file")
-    }
-
-    const blob = await res.blob()
-
-    // Try to extract filename from headers
-    const disposition = res.headers.get("content-disposition")
-    let filename = "processed_file"
-
-    if (disposition && disposition.includes("filename=")) {
-      filename = disposition.split("filename=")[1].replace(/"/g, "")
-    }
-
-    const url = window.URL.createObjectURL(blob)
-    const a = document.createElement("a")
-    a.href = url
-    a.download = filename
-    document.body.appendChild(a)
-    a.click()
-    a.remove()
-    window.URL.revokeObjectURL(url)
-  }
-
-  /* ---------------- Process Button Logic ---------------- */
+  /* ---------------- Process Logic ---------------- */
 
   async function handleProcessClick() {
     if (selectedFiles.length === 0) return
@@ -110,30 +91,45 @@ export default function UploadPage() {
       setProcessing(true)
       setProgress(0)
 
-      // 1️⃣ Upload file (MVP = first file)
+      // 1️⃣ Upload
       const uploadRes = await uploadFile(selectedFiles[0])
-      const fileId = uploadRes.file_id
 
       // 2️⃣ Start processing
-      const processRes = await startProcessing(fileId)
+      const processRes = await startProcessing(
+        uploadRes.file_id,
+        uploadRes.raw_file_key
+      )
+
       const jobId = processRes.job_id
 
-      // 3️⃣ Poll job status
+      // 3️⃣ Poll status
       const interval = setInterval(async () => {
-        const status = await getJobStatus(jobId)
-        setProgress(status.progress)
+        try {
+          const status = await getJobStatus(jobId)
+          setProgress(status.progress)
 
-        if (status.status === "COMPLETED") {
+          if (status.status === "FAILED") {
+            clearInterval(interval)
+            setProcessing(false)
+            console.error("Processing failed")
+          }
+
+          if (status.status === "COMPLETED") {
+            clearInterval(interval)
+            setProcessing(false)
+
+            const url = getResultUrl(jobId)
+            window.open(url, "_blank")
+          }
+        } catch (err) {
           clearInterval(interval)
           setProcessing(false)
-
-          // 4️⃣ Download processed file
-          await downloadResult(jobId)
+          console.error("Status polling failed", err)
         }
       }, 1500)
     } catch (err) {
-      console.error(err)
       setProcessing(false)
+      console.error("Upload or processing failed", err)
     }
   }
 
@@ -255,7 +251,6 @@ export default function UploadPage() {
             <input
               id="file-input"
               type="file"
-              multiple
               accept="image/*,.pdf"
               onChange={handleFileInput}
               className="hidden"
@@ -263,14 +258,14 @@ export default function UploadPage() {
             <label htmlFor="file-input" className="cursor-pointer">
               <FileImage className="mx-auto mb-4 size-10 text-primary" />
               <p className="font-medium">
-                Drag files here or click to select
+                Drag file here or click to select
               </p>
             </label>
           </div>
 
-          {selectedFiles.map((file, i) => (
+          {selectedFiles.map((file) => (
             <div
-              key={i}
+              key={file.name}
               className="flex items-center gap-4 p-3 rounded-lg bg-secondary/30"
             >
               <FileImage className="size-6 text-primary" />
@@ -280,34 +275,23 @@ export default function UploadPage() {
                   {formatBytes(file.size)}
                 </p>
               </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => removeFile(i)}
-              >
+              <Button variant="ghost" size="icon" onClick={removeFile}>
                 <X className="size-4" />
               </Button>
             </div>
           ))}
 
-          {/* Process Button */}
-          <div className="flex gap-4 pt-4">
-            <Button
-              size="lg"
-              className="flex-1 h-12"
-              disabled={selectedFiles.length === 0 || processing}
-              onClick={handleProcessClick}
-            >
-              <Upload className="size-4" />
-              {processing
-                ? `Processing ${progress}%`
-                : `Process ${selectedFiles.length} Files`}
-            </Button>
-
-            <Button variant="outline" size="lg">
-              <Info className="size-4" />
-            </Button>
-          </div>
+          <Button
+            size="lg"
+            className="w-full h-12"
+            disabled={selectedFiles.length === 0 || processing}
+            onClick={handleProcessClick}
+          >
+            <Upload className="size-4 mr-2" />
+            {processing
+              ? `Processing ${progress}%`
+              : "Upload & Process"}
+          </Button>
         </CardContent>
       </Card>
     </div>

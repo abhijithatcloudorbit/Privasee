@@ -15,5 +15,5 @@ class Job(BaseModel):
     file_id: str
     status: JobStatus
     progress: int = 0
-    result_path: Optional[str] = None
+    result_key: Optional[str] = None
     error: Optional[str] = None

@@ -14,8 +14,11 @@ export async function uploadFile(file: File) {
     throw new Error("Upload failed")
   }
 
+  // IMPORTANT:
+  // We extend the response shape but do not remove existing fields
   return res.json() as Promise<{
     file_id: string
     filename: string
+    raw_file_key: string   // ✅ NEW (non-breaking addition)
   }>
 }

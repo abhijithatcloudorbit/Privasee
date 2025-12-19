@@ -1,13 +1,20 @@
-export async function startProcessing(fileId: string) {
+export async function startProcessing(
+  fileId: string,
+  rawFileKey: string
+) {
+  const params = new URLSearchParams({
+    file_id: fileId,
+    raw_file_key: rawFileKey,
+  })
+
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_PROCESSING_API}/process?file_id=${fileId}`,
-    {
-      method: "POST",
-    }
+    `${process.env.NEXT_PUBLIC_PROCESSING_API}/process?${params.toString()}`,
+    { method: "POST" }
   )
 
   if (!res.ok) {
-    throw new Error("Processing failed")
+    const text = await res.text()
+    throw new Error(`Process failed: ${res.status} ${text}`)
   }
 
   return res.json() as Promise<{
