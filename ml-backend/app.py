@@ -1,4 +1,7 @@
-from fastapi import FastAPI, UploadFile, File, HTTPException, Query
+from dotenv import load_dotenv
+load_dotenv()
+
+from fastapi import FastAPI, UploadFile, File, HTTPException, Query, Header
 from fastapi.responses import Response
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -8,6 +11,21 @@ from license_plate.lp_model import blur_lp_from_bytes
 from uuid import uuid4
 import threading
 import os
+import traceback
+import jwt
+
+from supabase import create_client
+
+# -----------------------------
+# SUPABASE SETUP
+# -----------------------------
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_SERVICE_KEY = os.getenv("SUPABASE_SERVICE_KEY")
+
+if not SUPABASE_URL or not SUPABASE_SERVICE_KEY:
+    raise RuntimeError("Supabase environment variables not set")
+
+supabase = create_client(SUPABASE_URL, SUPABASE_SERVICE_KEY)
 
 # -----------------------------
 # APP SETUP
@@ -24,8 +42,8 @@ app.add_middleware(
 # -----------------------------
 # IN-MEMORY STORAGE
 # -----------------------------
-FILES = {}   # file_id -> image bytes
-JOBS = {}    # job_id -> status / progress / result
+FILES: dict[str, bytes] = {}
+RESULTS: dict[str, bytes] = {}
 
 # -----------------------------
 # CREATE OUTPUT FOLDERS
@@ -34,11 +52,25 @@ os.makedirs("outputs/face", exist_ok=True)
 os.makedirs("outputs/lp", exist_ok=True)
 
 # -----------------------------
+# AUTH HELPERS
+# -----------------------------
+def extract_user_id(authorization: str | None):
+    if not authorization:
+        return None
+
+    try:
+        token = authorization.replace("Bearer ", "")
+        payload = jwt.decode(token, options={"verify_signature": False})
+        return payload.get("sub")
+    except Exception:
+        return None
+
+# -----------------------------
 # UPLOAD FILE
 # -----------------------------
 @app.post("/upload")
 async def upload_file(file: UploadFile = File(...)):
-    if not file.content_type.startswith("image/"):
+    if not file.content_type or not file.content_type.startswith("image/"):
         raise HTTPException(status_code=400, detail="Invalid file type")
 
     file_bytes = await file.read()
@@ -53,8 +85,10 @@ async def upload_file(file: UploadFile = File(...)):
 # -----------------------------
 def run_job(job_id: str, file_id: str, mode: str):
     try:
-        JOBS[job_id]["status"] = "PROCESSING"
-        JOBS[job_id]["progress"] = 30
+        supabase.table("jobs").update({
+            "status": "PROCESSING",
+            "progress": 30
+        }).eq("job_id", job_id).execute()
 
         img_bytes = FILES[file_id]
 
@@ -65,14 +99,19 @@ def run_job(job_id: str, file_id: str, mode: str):
         else:
             raise ValueError(f"Unsupported mode: {mode}")
 
-        JOBS[job_id]["progress"] = 90
-        JOBS[job_id]["result"] = result
-        JOBS[job_id]["status"] = "COMPLETED"
-        JOBS[job_id]["progress"] = 100
+        RESULTS[job_id] = result
 
-    except Exception as e:
-        JOBS[job_id]["status"] = "FAILED"
-        JOBS[job_id]["error"] = str(e)
+        supabase.table("jobs").update({
+            "status": "COMPLETED",
+            "progress": 100
+        }).eq("job_id", job_id).execute()
+
+    except Exception:
+        traceback.print_exc()
+        supabase.table("jobs").update({
+            "status": "FAILED",
+            "progress": 0
+        }).eq("job_id", job_id).execute()
 
 # -----------------------------
 # START PROCESSING
@@ -80,24 +119,29 @@ def run_job(job_id: str, file_id: str, mode: str):
 @app.post("/process")
 def start_processing(
     file_id: str = Query(...),
-    mode: str = Query(...)
+    mode: str = Query(...),
+    authorization: str = Header(None)
 ):
     if file_id not in FILES:
         raise HTTPException(status_code=404, detail="File not found")
 
     if mode not in ("face", "license_plate"):
-        raise HTTPException(
-            status_code=400,
-            detail=f"Invalid mode: {mode}"
-        )
+        raise HTTPException(status_code=400, detail=f"Invalid mode: {mode}")
+
+    user_id = extract_user_id(authorization)
+    if not user_id:
+        raise HTTPException(status_code=401, detail="Unauthorized")
 
     job_id = str(uuid4())
 
-    JOBS[job_id] = {
+    supabase.table("jobs").insert({
+        "job_id": job_id,
+        "user_id": user_id,
+        "file_id": file_id,
+        "mode": mode,
         "status": "QUEUED",
-        "progress": 0,
-        "result": None,
-    }
+        "progress": 0
+    }).execute()
 
     thread = threading.Thread(
         target=run_job,
@@ -113,13 +157,21 @@ def start_processing(
 # -----------------------------
 @app.get("/status/{job_id}")
 def get_status(job_id: str):
-    job = JOBS.get(job_id)
-    if not job:
+    job = (
+        supabase
+        .table("jobs")
+        .select("status, progress")
+        .eq("job_id", job_id)
+        .single()
+        .execute()
+    )
+
+    if not job.data:
         raise HTTPException(status_code=404, detail="Job not found")
 
     return {
-        "status": job["status"],
-        "progress": job["progress"],
+        "status": job.data["status"],
+        "progress": job.data["progress"],
     }
 
 # -----------------------------
@@ -127,15 +179,27 @@ def get_status(job_id: str):
 # -----------------------------
 @app.get("/result/{job_id}")
 def get_result(job_id: str):
-    job = JOBS.get(job_id)
-    if not job:
+    job = (
+        supabase
+        .table("jobs")
+        .select("status")
+        .eq("job_id", job_id)
+        .single()
+        .execute()
+    )
+
+    if not job.data:
         raise HTTPException(status_code=404, detail="Job not found")
 
-    if job["status"] != "COMPLETED":
+    if job.data["status"] != "COMPLETED":
         raise HTTPException(status_code=400, detail="Job not completed")
 
+    result_bytes = RESULTS.get(job_id)
+    if not result_bytes:
+        raise HTTPException(status_code=500, detail="Result not available")
+
     return Response(
-        content=job["result"],
+        content=result_bytes,
         media_type="image/jpeg",
         headers={
             "Content-Disposition": "inline; filename=processed.jpg"

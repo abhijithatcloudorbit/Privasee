@@ -11,14 +11,9 @@ export async function uploadFile(file: File) {
   )
 
   if (!res.ok) {
-    throw new Error("Upload failed")
+    const text = await res.text()
+    throw new Error(text)
   }
 
-  // IMPORTANT:
-  // We extend the response shape but do not remove existing fields
-  return res.json() as Promise<{
-    file_id: string
-    filename: string
-    raw_file_key: string   // ✅ NEW (non-breaking addition)
-  }>
+  return res.json()
 }

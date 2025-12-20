@@ -1,19 +1,22 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
+
 import { Shield, Eye, EyeOff } from "lucide-react"
+
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card } from "@/components/ui/card"
-import { DEMO_CREDENTIALS } from "@/lib/mock-data"
+
+import { supabase } from "@/lib/supabase"
 
 export default function LoginPage() {
   const router = useRouter()
+
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
@@ -25,22 +28,24 @@ export default function LoginPage() {
     setError("")
     setIsLoading(true)
 
-    // Simulate API call
-    setTimeout(() => {
-      if (email === DEMO_CREDENTIALS.email && password === DEMO_CREDENTIALS.password) {
-        localStorage.setItem("user", JSON.stringify(DEMO_CREDENTIALS.user))
-        router.push("/dashboard")
-      } else {
-        setError("Invalid credentials. Use demo@privacyshield.com / demo123")
-      }
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    })
+
+    if (error) {
+      setError(error.message)
       setIsLoading(false)
-    }, 800)
+      return
+    }
+
+    router.push("/dashboard")
+    setIsLoading(false)
   }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <div className="w-full max-w-md space-y-8">
-        {/* Logo and Header */}
         <div className="text-center space-y-3">
           <Link href="/" className="inline-flex justify-center">
             <div className="size-16 bg-primary/20 rounded-2xl flex items-center justify-center">
@@ -48,23 +53,11 @@ export default function LoginPage() {
             </div>
           </Link>
           <h1 className="text-3xl font-semibold tracking-tight">Welcome Back</h1>
-          <p className="text-muted-foreground">Sign in to Privacy Shield to continue</p>
+          <p className="text-muted-foreground">
+            Sign in to Privacy Shield to continue
+          </p>
         </div>
 
-        {/* Demo Credentials Card */}
-        <Card className="p-4 bg-primary/5 border-primary/20">
-          <p className="text-sm font-medium text-primary mb-2">Demo Credentials</p>
-          <div className="space-y-1 text-sm text-muted-foreground">
-            <p>
-              Email: <span className="font-mono text-foreground">demo@privacyshield.com</span>
-            </p>
-            <p>
-              Password: <span className="font-mono text-foreground">demo123</span>
-            </p>
-          </div>
-        </Card>
-
-        {/* Login Form */}
         <Card className="p-6">
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">
@@ -72,7 +65,7 @@ export default function LoginPage() {
               <Input
                 id="email"
                 type="email"
-                placeholder="arjun.patel@privacyshield.com"
+                placeholder="user@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -95,9 +88,13 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                 >
-                  {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                  {showPassword ? (
+                    <EyeOff className="size-4" />
+                  ) : (
+                    <Eye className="size-4" />
+                  )}
                 </button>
               </div>
             </div>
@@ -124,7 +121,6 @@ export default function LoginPage() {
           </form>
         </Card>
 
-        {/* Sign Up Link */}
         <p className="text-center text-sm text-muted-foreground">
           {"Don't have an account? "}
           <Link href="/signup" className="text-primary hover:underline font-medium">

@@ -24,7 +24,7 @@ import {
 import { uploadFile } from "@/lib/api/upload"
 import { startProcessing } from "@/lib/api/process"
 import { getJobStatus } from "@/lib/api/status"
-import { getResultUrl } from "@/lib/api/result"
+import { getResultBlobUrl } from "@/lib/api/result"
 
 export default function UploadPage() {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
@@ -47,8 +47,6 @@ export default function UploadPage() {
 
   const [complianceMode, setComplianceMode] =
     useState<"strict" | "moderate" | "custom">("moderate")
-
-  /* ---------------- Drag & Drop ---------------- */
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault()
@@ -87,15 +85,11 @@ export default function UploadPage() {
     }))
   }
 
-  /* ----------- ADDED CODE SNIPPET (MODE RESOLUTION) ----------- */
   const resolveProcessingMode = () => {
     if (selectedModels.licensePlate) return "license_plate"
     if (selectedModels.face) return "face"
     return "face"
   }
-  /* ----------------------------------------------------------- */
-
-  /* ---------------- Process Logic ---------------- */
 
   async function handleProcessClick() {
     if (selectedFiles.length === 0) return
@@ -105,24 +99,17 @@ export default function UploadPage() {
       setProgress(0)
       setOutputUrl(null)
 
-      // 1️⃣ Upload
       const uploadRes = await uploadFile(selectedFiles[0])
-
-      /* ----------- ADDED CODE SNIPPET (USE MODE) ----------- */
       const mode = resolveProcessingMode()
-      /* --------------------------------------------------- */
 
-      // 2️⃣ Start processing
-      const processRes = await startProcessing(
-        uploadRes.file_id,
-        mode
-      )
+      const processRes = await startProcessing(uploadRes.file_id, mode)
+
       if (!processRes?.job_id) {
-  throw new Error("Processing did not return a job_id")
-}
-     const jobId = processRes.job_id
+        throw new Error("Processing did not return a job_id")
+      }
 
-      // 3️⃣ Poll status
+      const jobId = processRes.job_id
+
       pollingRef.current = setInterval(async () => {
         try {
           const statusRes = await getJobStatus(jobId)
@@ -138,9 +125,8 @@ export default function UploadPage() {
             clearInterval(pollingRef.current!)
             setProcessing(false)
 
-            // 4️⃣ Fetch result
-            const resultUrl = `${getResultUrl(jobId)}?t=${Date.now()}`
-            setOutputUrl(resultUrl)
+            const url = await getResultBlobUrl(jobId)
+            setOutputUrl(url)
           }
         } catch (err) {
           clearInterval(pollingRef.current!)
@@ -153,8 +139,6 @@ export default function UploadPage() {
       console.error("Upload or processing failed", err)
     }
   }
-
-  /* ---------------- UI ---------------- */
 
   return (
     <div className="space-y-8">
@@ -305,9 +289,7 @@ export default function UploadPage() {
             onClick={handleProcessClick}
           >
             <Upload className="size-4 mr-2" />
-            {processing
-              ? `Processing ${progress}%`
-              : "Upload & Process"}
+            {processing ? `Processing ${progress}%` : "Upload & Process"}
           </Button>
 
           {outputUrl && (

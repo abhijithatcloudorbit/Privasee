@@ -1,18 +1,21 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Shield, Eye, EyeOff } from "lucide-react"
+
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card } from "@/components/ui/card"
 
+import { supabase } from "@/lib/supabase"
+
 export default function SignUpPage() {
   const router = useRouter()
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -40,30 +43,29 @@ export default function SignUpPage() {
 
     setIsLoading(true)
 
-    // Simulate API call
-    setTimeout(() => {
-      const newUser = {
-        id: Date.now().toString(),
-        name: formData.name,
-        email: formData.email,
-        role: "User",
-        avatar: formData.name
-          .split(" ")
-          .map((n) => n[0])
-          .join("")
-          .toUpperCase(),
-        department: "New User",
-        joinedDate: new Date(),
-      }
-      localStorage.setItem("user", JSON.stringify(newUser))
-      router.push("/")
-    }, 800)
+    const { error } = await supabase.auth.signUp({
+      email: formData.email,
+      password: formData.password,
+      options: {
+        data: {
+          name: formData.name,
+        },
+      },
+    })
+
+    if (error) {
+      setError(error.message)
+      setIsLoading(false)
+      return
+    }
+
+    setIsLoading(false)
+    router.push("/login")
   }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <div className="w-full max-w-md space-y-8">
-        {/* Logo and Header */}
         <div className="text-center space-y-3">
           <div className="flex justify-center">
             <div className="size-16 bg-primary/20 rounded-2xl flex items-center justify-center">
@@ -71,10 +73,11 @@ export default function SignUpPage() {
             </div>
           </div>
           <h1 className="text-3xl font-semibold tracking-tight">Create Account</h1>
-          <p className="text-muted-foreground">Join Privacy Shield to get started</p>
+          <p className="text-muted-foreground">
+            Join Privacy Shield to get started
+          </p>
         </div>
 
-        {/* Sign Up Form */}
         <Card className="p-6">
           <form onSubmit={handleSignUp} className="space-y-4">
             <div className="space-y-2">
@@ -84,7 +87,9 @@ export default function SignUpPage() {
                 type="text"
                 placeholder="Arjun Patel"
                 value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
                 required
                 className="h-11"
               />
@@ -97,7 +102,9 @@ export default function SignUpPage() {
                 type="email"
                 placeholder="arjun.patel@company.com"
                 value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, email: e.target.value })
+                }
                 required
                 className="h-11"
               />
@@ -111,7 +118,9 @@ export default function SignUpPage() {
                   type={showPassword ? "text" : "password"}
                   placeholder="Create a strong password"
                   value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, password: e.target.value })
+                  }
                   required
                   className="h-11 pr-10"
                 />
@@ -120,7 +129,11 @@ export default function SignUpPage() {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                  {showPassword ? (
+                    <EyeOff className="size-4" />
+                  ) : (
+                    <Eye className="size-4" />
+                  )}
                 </button>
               </div>
             </div>
@@ -133,16 +146,27 @@ export default function SignUpPage() {
                   type={showConfirmPassword ? "text" : "password"}
                   placeholder="Confirm your password"
                   value={formData.confirmPassword}
-                  onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      confirmPassword: e.target.value,
+                    })
+                  }
                   required
                   className="h-11 pr-10"
                 />
                 <button
                   type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  onClick={() =>
+                    setShowConfirmPassword(!showConfirmPassword)
+                  }
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  {showConfirmPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                  {showConfirmPassword ? (
+                    <EyeOff className="size-4" />
+                  ) : (
+                    <Eye className="size-4" />
+                  )}
                 </button>
               </div>
             </div>
@@ -155,7 +179,11 @@ export default function SignUpPage() {
 
             <div className="text-sm text-muted-foreground">
               <label className="flex items-start gap-2 cursor-pointer">
-                <input type="checkbox" required className="size-4 rounded border-border mt-0.5" />
+                <input
+                  type="checkbox"
+                  required
+                  className="size-4 rounded border-border mt-0.5"
+                />
                 <span>
                   I agree to the{" "}
                   <Link href="#" className="text-primary hover:underline">
@@ -175,10 +203,12 @@ export default function SignUpPage() {
           </form>
         </Card>
 
-        {/* Sign In Link */}
         <p className="text-center text-sm text-muted-foreground">
           Already have an account?{" "}
-          <Link href="/login" className="text-primary hover:underline font-medium">
+          <Link
+            href="/login"
+            className="text-primary hover:underline font-medium"
+          >
             Sign in
           </Link>
         </p>
