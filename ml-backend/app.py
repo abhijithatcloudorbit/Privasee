@@ -1,9 +1,17 @@
 from dotenv import load_dotenv
 load_dotenv()
 
-from fastapi import FastAPI, UploadFile, File, HTTPException, Query, Header
+from fastapi import (
+    FastAPI,
+    UploadFile,
+    File,
+    HTTPException,
+    Query,
+    Depends,
+)
 from fastapi.responses import Response
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
 from face.facemodel import blur_faces_from_bytes
 from license_plate.lp_model import blur_lp_from_bytes
@@ -40,43 +48,41 @@ app.add_middleware(
 )
 
 # -----------------------------
+# SECURITY (THIS FIXES SWAGGER)
+# -----------------------------
+bearer_scheme = HTTPBearer()
+
+def get_user_id(
+    credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
+) -> str:
+    try:
+        token = credentials.credentials
+        payload = jwt.decode(token, options={"verify_signature": False})
+        user_id = payload.get("sub")
+
+        if not user_id:
+            raise HTTPException(status_code=401, detail="Invalid token")
+
+        return user_id
+    except Exception:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+# -----------------------------
 # IN-MEMORY STORAGE
 # -----------------------------
 FILES: dict[str, bytes] = {}
 RESULTS: dict[str, bytes] = {}
 
 # -----------------------------
-# CREATE OUTPUT FOLDERS
-# -----------------------------
-os.makedirs("outputs/face", exist_ok=True)
-os.makedirs("outputs/lp", exist_ok=True)
-
-# -----------------------------
-# AUTH HELPERS
-# -----------------------------
-def extract_user_id(authorization: str | None):
-    if not authorization:
-        return None
-
-    try:
-        token = authorization.replace("Bearer ", "")
-        payload = jwt.decode(token, options={"verify_signature": False})
-        return payload.get("sub")
-    except Exception:
-        return None
-
-# -----------------------------
-# UPLOAD FILE
+# UPLOAD (NO AUTH)
 # -----------------------------
 @app.post("/upload")
 async def upload_file(file: UploadFile = File(...)):
     if not file.content_type or not file.content_type.startswith("image/"):
         raise HTTPException(status_code=400, detail="Invalid file type")
 
-    file_bytes = await file.read()
     file_id = str(uuid4())
-
-    FILES[file_id] = file_bytes
+    FILES[file_id] = await file.read()
 
     return {"file_id": file_id}
 
@@ -97,7 +103,7 @@ def run_job(job_id: str, file_id: str, mode: str):
         elif mode == "face":
             result = blur_faces_from_bytes(img_bytes)
         else:
-            raise ValueError(f"Unsupported mode: {mode}")
+            raise ValueError("Unsupported mode")
 
         RESULTS[job_id] = result
 
@@ -114,23 +120,19 @@ def run_job(job_id: str, file_id: str, mode: str):
         }).eq("job_id", job_id).execute()
 
 # -----------------------------
-# START PROCESSING
+# START PROCESSING (AUTH)
 # -----------------------------
 @app.post("/process")
 def start_processing(
     file_id: str = Query(...),
     mode: str = Query(...),
-    authorization: str = Header(None)
+    user_id: str = Depends(get_user_id),
 ):
     if file_id not in FILES:
         raise HTTPException(status_code=404, detail="File not found")
 
     if mode not in ("face", "license_plate"):
-        raise HTTPException(status_code=400, detail=f"Invalid mode: {mode}")
-
-    user_id = extract_user_id(authorization)
-    if not user_id:
-        raise HTTPException(status_code=401, detail="Unauthorized")
+        raise HTTPException(status_code=400, detail="Invalid mode")
 
     job_id = str(uuid4())
 
@@ -140,34 +142,31 @@ def start_processing(
         "file_id": file_id,
         "mode": mode,
         "status": "QUEUED",
-        "progress": 0
+        "progress": 0,
     }).execute()
 
-    thread = threading.Thread(
+    threading.Thread(
         target=run_job,
         args=(job_id, file_id, mode),
         daemon=True,
-    )
-    thread.start()
+    ).start()
 
     return {"job_id": job_id}
 
 # -----------------------------
-# JOB STATUS
+# JOB STATUS (AUTH + OWNERSHIP)
 # -----------------------------
 @app.get("/status/{job_id}")
-def get_status(job_id: str):
-    job = (
-        supabase
-        .table("jobs")
-        .select("status, progress")
-        .eq("job_id", job_id)
-        .single()
-        .execute()
-    )
+def get_status(job_id: str, user_id: str = Depends(get_user_id)):
+    job = supabase.table("jobs").select(
+        "status, progress, user_id"
+    ).eq("job_id", job_id).single().execute()
 
     if not job.data:
         raise HTTPException(status_code=404, detail="Job not found")
+
+    if job.data["user_id"] != user_id:
+        raise HTTPException(status_code=403, detail="Forbidden")
 
     return {
         "status": job.data["status"],
@@ -175,39 +174,35 @@ def get_status(job_id: str):
     }
 
 # -----------------------------
-# GET RESULT
+# GET RESULT (AUTH + OWNERSHIP)
 # -----------------------------
 @app.get("/result/{job_id}")
-def get_result(job_id: str):
-    job = (
-        supabase
-        .table("jobs")
-        .select("status")
-        .eq("job_id", job_id)
-        .single()
-        .execute()
-    )
+def get_result(job_id: str, user_id: str = Depends(get_user_id)):
+    job = supabase.table("jobs").select(
+        "status, user_id"
+    ).eq("job_id", job_id).single().execute()
 
     if not job.data:
         raise HTTPException(status_code=404, detail="Job not found")
 
+    if job.data["user_id"] != user_id:
+        raise HTTPException(status_code=403, detail="Forbidden")
+
     if job.data["status"] != "COMPLETED":
         raise HTTPException(status_code=400, detail="Job not completed")
 
-    result_bytes = RESULTS.get(job_id)
-    if not result_bytes:
+    result = RESULTS.get(job_id)
+    if not result:
         raise HTTPException(status_code=500, detail="Result not available")
 
     return Response(
-        content=result_bytes,
+        content=result,
         media_type="image/jpeg",
-        headers={
-            "Content-Disposition": "inline; filename=processed.jpg"
-        },
+        headers={"Content-Disposition": "inline; filename=processed.jpg"},
     )
 
 # -----------------------------
-# HEALTH CHECK
+# HEALTH
 # -----------------------------
 @app.get("/health")
 def health():

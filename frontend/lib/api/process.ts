@@ -3,17 +3,18 @@ import { supabase } from "@/lib/supabase"
 export async function startProcessing(
   fileId: string,
   mode: "face" | "license_plate"
-) {
+): Promise<{ job_id: string }> {
   const params = new URLSearchParams({
     file_id: fileId,
-    mode: mode,
+    mode,
   })
 
   const {
     data: { session },
+    error: sessionError,
   } = await supabase.auth.getSession()
 
-  if (!session) {
+  if (sessionError || !session) {
     throw new Error("User not authenticated")
   }
 

@@ -13,13 +13,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 
-import {
-  Upload,
-  X,
-  FileImage,
-  Shield,
-  Settings,
-} from "lucide-react"
+import { Upload, FileImage, Shield, Settings } from "lucide-react"
 
 import { uploadFile } from "@/lib/api/upload"
 import { startProcessing } from "@/lib/api/process"
@@ -28,11 +22,8 @@ import { getResultBlobUrl } from "@/lib/api/result"
 
 export default function UploadPage() {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
-  const [isDragging, setIsDragging] = useState(false)
-
   const [processing, setProcessing] = useState(false)
   const [progress, setProgress] = useState(0)
-
   const [outputUrl, setOutputUrl] = useState<string | null>(null)
 
   const pollingRef = useRef<NodeJS.Timeout | null>(null)
@@ -48,43 +39,6 @@ export default function UploadPage() {
   const [complianceMode, setComplianceMode] =
     useState<"strict" | "moderate" | "custom">("moderate")
 
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault()
-    setIsDragging(true)
-  }
-
-  const handleDragLeave = (e: React.DragEvent) => {
-    e.preventDefault()
-    setIsDragging(false)
-  }
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault()
-    setIsDragging(false)
-    setSelectedFiles([e.dataTransfer.files[0]])
-  }
-
-  const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      setSelectedFiles([e.target.files[0]])
-    }
-  }
-
-  const removeFile = () => {
-    setSelectedFiles([])
-    setOutputUrl(null)
-  }
-
-  const formatBytes = (bytes: number) =>
-    (bytes / (1024 * 1024)).toFixed(2) + " MB"
-
-  const toggleModel = (model: keyof typeof selectedModels) => {
-    setSelectedModels((prev) => ({
-      ...prev,
-      [model]: !prev[model],
-    }))
-  }
-
   const resolveProcessingMode = () => {
     if (selectedModels.licensePlate) return "license_plate"
     if (selectedModels.face) return "face"
@@ -99,9 +53,11 @@ export default function UploadPage() {
       setProgress(0)
       setOutputUrl(null)
 
+      // 1️⃣ Upload
       const uploadRes = await uploadFile(selectedFiles[0])
-      const mode = resolveProcessingMode()
 
+      // 2️⃣ Start processing
+      const mode = resolveProcessingMode()
       const processRes = await startProcessing(uploadRes.file_id, mode)
 
       if (!processRes?.job_id) {
@@ -110,6 +66,7 @@ export default function UploadPage() {
 
       const jobId = processRes.job_id
 
+      // 3️⃣ Poll status
       pollingRef.current = setInterval(async () => {
         try {
           const statusRes = await getJobStatus(jobId)
@@ -125,6 +82,7 @@ export default function UploadPage() {
             clearInterval(pollingRef.current!)
             setProcessing(false)
 
+            // 4️⃣ Fetch result blob
             const url = await getResultBlobUrl(jobId)
             setOutputUrl(url)
           }
@@ -175,7 +133,12 @@ export default function UploadPage() {
             ).map(([key, label]) => (
               <button
                 key={key}
-                onClick={() => toggleModel(key)}
+                onClick={() =>
+                  setSelectedModels((prev) => ({
+                    ...prev,
+                    [key]: !prev[key],
+                  }))
+                }
                 className={`p-4 rounded-lg border-2 text-left transition-all ${
                   selectedModels[key]
                     ? "border-primary bg-primary/5"
@@ -200,87 +163,19 @@ export default function UploadPage() {
       <Card>
         <CardHeader>
           <div className="flex items-center gap-2">
-            <Shield className="size-5 text-primary" />
-            <CardTitle>Compliance Mode</CardTitle>
-          </div>
-        </CardHeader>
-
-        <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {(["strict", "moderate", "custom"] as const).map((mode) => (
-            <button
-              key={mode}
-              onClick={() => setComplianceMode(mode)}
-              className={`p-4 rounded-lg border-2 text-left ${
-                complianceMode === mode
-                  ? "border-primary bg-primary/5"
-                  : "border-border hover:border-primary/50"
-              }`}
-            >
-              <Badge
-                variant={complianceMode === mode ? "default" : "outline"}
-                className="mb-2"
-              >
-                {mode.toUpperCase()}
-              </Badge>
-              <p className="text-sm text-muted-foreground">
-                {mode} privacy enforcement
-              </p>
-            </button>
-          ))}
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <div className="flex items-center gap-2">
             <Upload className="size-5 text-primary" />
             <CardTitle>File Upload</CardTitle>
           </div>
         </CardHeader>
 
         <CardContent className="space-y-6">
-          <div
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            onDrop={handleDrop}
-            className={`border-2 border-dashed rounded-xl p-12 text-center ${
-              isDragging
-                ? "border-primary bg-primary/5"
-                : "border-border hover:border-primary/50"
-            }`}
-          >
-            <input
-              id="file-input"
-              type="file"
-              accept="image/*,.pdf"
-              onChange={handleFileInput}
-              className="hidden"
-            />
-            <label htmlFor="file-input" className="cursor-pointer">
-              <FileImage className="mx-auto mb-4 size-10 text-primary" />
-              <p className="font-medium">
-                Drag file here or click to select
-              </p>
-            </label>
-          </div>
-
-          {selectedFiles.map((file) => (
-            <div
-              key={file.name}
-              className="flex items-center gap-4 p-3 rounded-lg bg-secondary/30"
-            >
-              <FileImage className="size-6 text-primary" />
-              <div className="flex-1">
-                <p className="truncate">{file.name}</p>
-                <p className="text-xs text-muted-foreground">
-                  {formatBytes(file.size)}
-                </p>
-              </div>
-              <Button variant="ghost" size="icon" onClick={removeFile}>
-                <X className="size-4" />
-              </Button>
-            </div>
-          ))}
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) =>
+              e.target.files && setSelectedFiles([e.target.files[0]])
+            }
+          />
 
           <Button
             size="lg"
@@ -288,7 +183,6 @@ export default function UploadPage() {
             disabled={selectedFiles.length === 0 || processing}
             onClick={handleProcessClick}
           >
-            <Upload className="size-4 mr-2" />
             {processing ? `Processing ${progress}%` : "Upload & Process"}
           </Button>
 

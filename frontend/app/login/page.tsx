@@ -28,6 +28,7 @@ export default function LoginPage() {
     setError("")
     setIsLoading(true)
 
+    // 1️⃣ Sign in
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -39,6 +40,21 @@ export default function LoginPage() {
       return
     }
 
+    // 2️⃣ Get session (THIS IS THE IMPORTANT PART)
+    const { data } = await supabase.auth.getSession()
+
+    const accessToken = data.session?.access_token
+
+    if (!accessToken) {
+      setError("Failed to retrieve access token")
+      setIsLoading(false)
+      return
+    }
+
+    // 🔍 TEMPORARY: log token for Swagger / debugging
+    console.log("SUPABASE ACCESS TOKEN:", accessToken)
+
+    // 3️⃣ Continue to dashboard
     router.push("/dashboard")
     setIsLoading(false)
   }
@@ -90,11 +106,7 @@ export default function LoginPage() {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                 >
-                  {showPassword ? (
-                    <EyeOff className="size-4" />
-                  ) : (
-                    <Eye className="size-4" />
-                  )}
+                  {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
                 </button>
               </div>
             </div>
@@ -104,16 +116,6 @@ export default function LoginPage() {
                 <p className="text-sm text-destructive">{error}</p>
               </div>
             )}
-
-            <div className="flex items-center justify-between text-sm">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" className="size-4 rounded border-border" />
-                <span className="text-muted-foreground">Remember me</span>
-              </label>
-              <Link href="/forgot-password" className="text-primary hover:underline">
-                Forgot password?
-              </Link>
-            </div>
 
             <Button type="submit" className="w-full h-11" disabled={isLoading}>
               {isLoading ? "Signing in..." : "Sign In"}
